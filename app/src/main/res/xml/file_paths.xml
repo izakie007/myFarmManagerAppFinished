@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- External storage - Downloads folder for backups and payslips -->
+    <external-path
+        name="external_files"
+        path="Download/PalmFarm/" />
+
+    <!-- Internal storage for receipt photos -->
+    <files-path
+        name="internal_files"
+        path="receipts/" />
+
+    <!-- Cache directory for temporary files -->
+    <cache-path
+        name="cache_files"
+        path="temp/" />
+</paths>

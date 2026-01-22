@@ -1,0 +1,620 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Palm Farm Manager</string>
+
+    <!-- Navigation -->
+    <string name="nav_dashboard">Dashboard</string>
+    <string name="nav_tasks">Tasks</string>
+    <string name="nav_production">Production</string>
+    <string name="nav_finances">Finances</string>
+    <string name="nav_settings">Settings</string>
+    <string name="nav_analytics">Analytics</string>
+
+    <!-- Authentication -->
+    <string name="auth_password_hint">Enter Password</string>
+    <string name="auth_unlock">Unlock</string>
+    <string name="auth_fingerprint_prompt">Tap to authenticate with fingerprint</string>
+    <string name="auth_invalid_password">Invalid password</string>
+
+    <!-- Dashboard -->
+    <string name="dashboard_current_cycle">Current Cycle</string>
+    <string name="dashboard_key_metrics">Key Metrics</string>
+    <string name="dashboard_quick_actions">Quick Actions</string>
+    <string name="dashboard_recent_activity">Recent Activity</string>
+    <string name="dashboard_cycle_history">Cycle History</string>
+    <string name="dashboard_empty_state">Welcome! Set up your farm in Settings to begin.</string>
+
+    <!-- Common Actions -->
+    <string name="action_add">Add</string>
+    <string name="action_edit">Edit</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_save">Save</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_process">Process</string>
+    <string name="action_view_details">View Details</string>
+    <string name="action_filter">Filter</string>
+    <string name="action_sort">Sort</string>
+    <string name="action_export">Export</string>
+    <string name="action_view_all">View All</string>
+
+    <!-- Units -->
+    <string name="unit_xaf">XAF</string>
+    <string name="unit_bunches">bunches</string>
+    <string name="unit_gallons">gallons</string>
+    <string name="unit_litres">litres</string>
+    <string name="unit_tonnes">tonnes</string>
+    <string name="unit_bags">bags</string>
+    <string name="unit_hectares">hectares</string>
+
+    <!-- Error Messages -->
+    <string name="error_field_required">This field is required</string>
+    <string name="error_invalid_input">Invalid input</string>
+    <string name="error_database">Database error. Please try again.</string>
+    <string name="error_insufficient_stock">Insufficient stock</string>
+
+    <!-- Success Messages -->
+    <string name="success_saved">Saved successfully</string>
+    <string name="success_deleted">Deleted successfully</string>
+    <string name="success_wage_processed">Wage processed successfully</string>
+    <string name="success_backup_created">Backup created successfully</string>
+
+    <!-- Dashboard -->
+    <string name="current_cycle">Current Cycle</string>
+    <string name="cycle_progress">Cycle Progress</string>
+    <string name="key_metrics">Key Metrics</string>
+    <string name="bunches_per_tree">Bunches/Tree</string>
+    <string name="oil_per_bunch">Oil/Bunch (L)</string>
+    <string name="cycle_expense">Cycle Expense</string>
+    <string name="cycle_income">Cycle Income</string>
+    <string name="quick_actions">Quick Actions</string>
+    <string name="recent_activity">Recent Activity</string>
+    <string name="cycle_history">Cycle History</string>
+    <string name="no_cycle_available">No Production Cycle</string>
+    <string name="create_cycle_in_settings">A new cycle will be created automatically at the start of the season</string>
+    <string name="tasks">Tasks</string>
+    <string name="production">Production</string>
+    <string name="finances">Finances</string>
+    <string name="analytics">Analytics</string>
+    <string name="settings">Settings</string>
+
+    <!-- Format Strings -->
+    <string name="date_range_format">%1$s - %2$s</string>
+    <string name="bunches_progress_format">%1$d / %2$d bunches</string>
+    <string name="percentage_format">%1$d%%</string>
+    <string name="bunches_ratio_format">%1$d / %2$d</string>
+    <string name="bunches">Bunches</string>
+    <string name="expenses">Expenses</string>
+    <string name="income">Income</string>
+    <string name="profit">Profit</string>
+
+    <!-- Tasks Screen -->
+    <string name="add_task">Add Task</string>
+    <string name="edit_task">Edit Task</string>
+    <string name="task_description">Description</string>
+    <string name="task_description_hint">Enter task description</string>
+    <string name="task_category">Category</string>
+    <string name="task_worker">Worker</string>
+    <string name="task_select_worker">Select Worker</string>
+    <string name="task_start_date">Start Date</string>
+    <string name="task_end_date">End Date</string>
+    <string name="task_status">Status</string>
+    <string name="task_quantity">Quantity</string>
+    <string name="task_unit_pay_rate">Unit Pay Rate</string>
+    <string name="task_quantity_completed">Quantity Completed</string>
+    <string name="task_total_wage">Total Wage</string>
+    <string name="task_remarks">Remarks</string>
+    <string name="filter_tasks">Filter Tasks</string>
+    <string name="sort_tasks">Sort Tasks</string>
+    <string name="no_tasks">No tasks found</string>
+    <string name="add_first_task">Tap + to add your first task</string>
+    
+    <!-- Task Categories -->
+    <string name="category_harvest">Harvest</string>
+    <string name="category_weeding">Weeding</string>
+    <string name="category_fertilizing">Fertilizing</string>
+    <string name="category_pruning">Pruning</string>
+    <string name="category_planting">Planting</string>
+    <string name="category_other">Other</string>
+    
+    <!-- Task Status -->
+    <string name="status_pending">Pending</string>
+    <string name="status_in_progress">In Progress</string>
+    <string name="status_completed">Completed</string>
+    <string name="status_cancelled">Cancelled</string>
+    
+    <!-- Sort Options -->
+    <string name="sort_by_date_newest">Date (Newest First)</string>
+    <string name="sort_by_date_oldest">Date (Oldest First)</string>
+    <string name="sort_by_category">Category</string>
+    <string name="sort_by_status">Status</string>
+    <string name="sort_by_worker">Worker</string>
+    
+    <!-- Production Screen -->
+    <string name="production_metrics">Production Metrics</string>
+    <string name="bunches_milled">Bunches Milled</string>
+    <string name="bunches_available">Bunches Available</string>
+    <string name="oil_stock">Oil Stock</string>
+    <string name="harvest_section">Harvest</string>
+    <string name="milling_section">Milling</string>
+    <string name="loose_nuts_section">Loose Nuts</string>
+    
+    <!-- Harvest -->
+    <string name="add_harvest">Add Harvest</string>
+    <string name="edit_harvest">Edit Harvest</string>
+    <string name="harvest_number">Harvest #</string>
+    <string name="harvest_date">Date</string>
+    <string name="harvest_worker">Worker</string>
+    <string name="harvest_bunches">Number of Bunches</string>
+    <string name="harvest_remarks">Remarks (Optional)</string>
+    <string name="no_harvests">No harvests recorded</string>
+    
+    <!-- Milling -->
+    <string name="add_milling">Add Milling</string>
+    <string name="edit_milling">Edit Milling</string>
+    <string name="milling_date">Date</string>
+    <string name="milling_worker">Worker</string>
+    <string name="milling_bunches">Bunches Milled</string>
+    <string name="milling_drums">Drums Cooked</string>
+    <string name="milling_oil_produced">Oil Produced</string>
+    <string name="milling_unit_gallons">Gallons</string>
+    <string name="milling_unit_litres">Litres</string>
+    <string name="milling_bunches_available">%1$d bunches available</string>
+    <string name="milling_remarks">Remarks (Optional)</string>
+    <string name="no_millings">No milling records</string>
+    
+    <!-- Loose Nuts -->
+    <string name="add_loose_nuts">Add Loose Nuts</string>
+    <string name="edit_loose_nuts">Edit Loose Nuts</string>
+    <string name="loose_nuts_date">Date</string>
+    <string name="loose_nuts_worker">Worker</string>
+    <string name="loose_nuts_bags">Number of Bags</string>
+    <string name="loose_nuts_remarks">Remarks (Optional)</string>
+    <string name="no_loose_nuts">No loose nuts recorded</string>
+    
+    <!-- Delete Confirmation -->
+    <string name="confirm_delete_title">Confirm Delete</string>
+    <string name="confirm_delete_task">Delete this task?</string>
+    <string name="confirm_delete_harvest">Delete this harvest?</string>
+    <string name="confirm_delete_milling">Delete this milling record?</string>
+    <string name="confirm_delete_loose_nuts">Delete this loose nuts record?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+
+    
+    <!-- Finances Hub -->
+    <string name="finances_summary">Financial Summary</string>
+    <string name="finances_categories">Categories</string>
+    <string name="finances_total_income">Total Income</string>
+    <string name="finances_total_expenses">Total Expenses</string>
+    <string name="finances_net_balance">Net Balance</string>
+    <string name="finances_expenses">Expenses</string>
+    <string name="finances_fixed_costs">Fixed Costs</string>
+    <string name="finances_wages">Worker Wages</string>
+    <string name="finances_income">Income</string>
+    <string name="finances_loans">Loans</string>
+    <string name="finances_reports">Financial Reports</string>
+    <string name="finances_reports_subtitle">Cash Flow, Profitability, Balance Sheet</string>
+    <string name="finances_unpaid">Unpaid:</string>
+    <string name="finances_paid">Paid:</string>
+    <string name="finances_sales">Sales:</string>
+    <string name="finances_consumption">Consumption:</string>
+    <string name="finances_debt">Debt:</string>
+    <string name="fixed_costs_count">%1$d active assets</string>
+    <string name="loans_count">%1$d active</string>
+    <string name="action_navigate">Navigate</string>
+    
+    <!-- Expenses -->
+    <string name="expenses_title">Expenses</string>
+    <string name="add_expense">Add Expense</string>
+    <string name="edit_expense">Edit Expense</string>
+    <string name="delete_expense">Delete Expense</string>
+    <string name="delete_expense_confirmation">Are you sure you want to delete this expense?</string>
+    <string name="expense_deleted">Expense deleted</string>
+    <string name="expense_amount">Amount</string>
+    <string name="expense_category">Category</string>
+    <string name="expense_description">Description</string>
+    <string name="expense_date">Date</string>
+    <string name="expense_photo">Receipt Photo</string>
+    <string name="expense_category_supplies">Supplies</string>
+    <string name="expense_category_maintenance">Maintenance</string>
+    <string name="expense_category_fuel">Fuel</string>
+    <string name="expense_category_transport">Transport</string>
+    <string name="expense_category_other">Other</string>
+    <string name="capture_photo">Capture Photo</string>
+    <string name="remove_photo">Remove Photo</string>
+    <string name="photo_captured">Photo captured</string>
+    <string name="camera_permission_denied">Camera permission denied</string>
+    <string name="camera_permission_rationale">Camera permission is needed to capture receipt photos</string>
+    <string name="error_invalid_amount">Please enter a valid amount</string>
+    <string name="error_category_required">Please select a category</string>
+    <string name="error_description_required">Please enter a description</string>
+    <string name="filter_period">Filter by Period</string>
+    <string name="filter_all">All Time</string>
+    <string name="filter_current_cycle">Current Cycle</string>
+    <string name="filter_month">This Month</string>
+    <string name="filter_quarter">This Quarter</string>
+    <string name="filter_year">This Year</string>
+    <string name="total_expenses">Total Expenses</string>
+    <string name="no_expenses">No expenses recorded</string>
+    <string name="add_first_expense">Tap + to add your first expense</string>
+    
+    <!-- Fixed Costs -->
+    <string name="fixed_costs_title">Fixed Costs</string>
+    <string name="add_fixed_cost">Add Fixed Cost</string>
+    <string name="edit_fixed_cost">Edit Fixed Cost</string>
+    <string name="delete_fixed_cost">Delete Fixed Cost</string>
+    <string name="fixed_cost_name">Asset Name</string>
+    <string name="fixed_cost_type">Type</string>
+    <string name="fixed_cost_amount">Amount</string>
+    <string name="fixed_cost_life_span">Life Span (years)</string>
+    <string name="fixed_cost_start_date">Start Date</string>
+    <string name="fixed_cost_type_land">Land</string>
+    <string name="fixed_cost_type_equipment">Equipment</string>
+    <string name="depreciation_progress">Depreciation Progress</string>
+    <string name="used_value">Used Value</string>
+    <string name="value_left">Value Left</string>
+    <string name="monthly_depreciation">Monthly Depreciation</string>
+    <string name="fully_depreciated">Fully Depreciated</string>
+    <string name="no_fixed_costs">No fixed costs recorded</string>
+    
+    <!-- Wages -->
+    <string name="wages_title">Worker Wages</string>
+    <string name="wages_summary">Wages Summary</string>
+    <string name="total_wages">Total Wages</string>
+    <string name="total_advances">Total Advances</string>
+    <string name="wages_left">Wages Left</string>
+    <string name="wages_summary_pending_gross">Pending Gross</string>
+    <string name="wages_summary_pending_net">Pending Net</string>
+    <string name="wages_summary_processed">Processed Net</string>
+    <string name="wages_summary_in_progress">Tasks In Progress</string>
+    <string name="unpaid_wages">Unpaid Wages</string>
+    <string name="processed_wages">Processed Wages</string>
+    <string name="process_all_wages">Process All Wages</string>
+    <string name="process_wage">Process Wage</string>
+    <string name="wage_details">Wage Details</string>
+    <string name="worker_info">Worker Information</string>
+    <string name="work_completed">Work Completed</string>
+    <string name="advances_section">Advances</string>
+    <string name="add_advance">Add Advance</string>
+    <string name="advance_amount">Advance Amount</string>
+    <string name="advance_date">Date</string>
+    <string name="advance_reason">Reason</string>
+    <string name="advance_explanation">Record an advance payment to deduct from the worker\'s next wage.</string>
+    <string name="advance_worker_hint">Worker</string>
+    <string name="advance_date_hint">Date</string>
+    <string name="advance_amount_hint">Amount (XAF)</string>
+    <string name="advance_reason_hint">Reason (optional)</string>
+    <string name="advance_save">Save Advance</string>
+    <string name="advance_limit_remaining">Advance allowance remaining: %1$s</string>
+    <string name="payment_summary">Payment Summary</string>
+    <string name="gross_wage">Gross Wage</string>
+    <string name="advances_deducted">Advances Deducted</string>
+    <string name="advances_applied">Advances Applied</string>
+    <string name="net_wage">Net Wage</string>
+    <string name="payment_method">Payment Method</string>
+    <string name="wages_select_payment_method">Select payment method</string>
+    <string name="payment_method_cash">Cash</string>
+    <string name="payment_method_transfer">Bank Transfer</string>
+    <string name="payment_method_other">Other</string>
+    <string name="download_payslip">Download Payslip</string>
+    <string name="action_print_payslip">Print Payslip</string>
+    <string name="payslip_generated">Payslip generated successfully</string>
+    <string name="advance_limit_exceeded" formatted="false">Advance exceeds 50%% limit</string>
+    <string name="no_unpaid_wages">All wages are paid</string>
+    <string name="no_processed_wages">No wages processed yet</string>
+    <string name="wages_task_selection_hint">Select the completed tasks you want to include in this payment.</string>
+    <string name="wages_pending_tasks_label">Tasks pending payment</string>
+    <string name="action_process_selected">Process Selected Tasks</string>
+    <string name="wages_completed_tasks_count">%1$d completed</string>
+    <string name="wages_in_progress_tasks_count">%1$d in progress</string>
+    <string name="wages_no_completed_tasks">No completed tasks to process yet.</string>
+    <string name="wages_process_all_success">%1$d wage(s) processed</string>
+    <string name="wages_processed_single">%1$s processed successfully</string>
+    <string name="wages_payslip_generated">Payslip saved: %1$s</string>
+    <string name="wages_error_unknown">Something went wrong</string>
+    <string name="wages_error_no_tasks_selected">Select at least one completed task</string>
+    <string name="wages_error_no_payable_tasks">There are no completed tasks to process</string>
+    <string name="wages_error_payment_missing">Wage payment not found</string>
+    <string name="wages_error_worker_missing">Worker information missing</string>
+    <string name="wages_error_summary_missing">No wage summary available</string>
+    <string name="wages_error_pdf_failed">Failed to generate payslip</string>
+    <string name="error_select_worker">Please select a worker</string>
+    <string name="error_enter_amount">Enter an amount greater than zero</string>
+    <string name="success_advance_saved">Advance recorded successfully</string>
+    <string name="wages_task_summary">%1$s × %2$s</string>
+    <string-array name="wage_payment_methods">
+        <item>@string/payment_method_cash</item>
+        <item>@string/payment_method_transfer</item>
+        <item>@string/payment_method_other</item>
+    </string-array>
+    <string name="error_saving_advance">Could not record advance</string>
+    
+    <!-- Income -->
+    <string name="income_title">Income</string>
+    <string name="income_metrics">Income Metrics</string>
+    <string name="total_sales">Total Sales</string>
+    <string name="total_consumption">Total Consumption</string>
+    <string name="total_income">Total Income</string>
+    <string name="sales_tab">Sales</string>
+    <string name="consumption_tab">Consumption</string>
+    <string name="add_sale">Add Sale</string>
+    <string name="add_consumption">Add Consumption</string>
+    <string name="sale_quantity">Quantity</string>
+    <string name="sale_unit">Unit</string>
+    <string name="sale_unit_price">Unit Price</string>
+    <string name="sale_total_amount">Total Amount</string>
+    <string name="sale_date">Date</string>
+    <string name="sale_buyer">Buyer (Optional)</string>
+    <string name="stock_available">Stock Available</string>
+    <string name="consumption_quantity">Quantity (Gallons)</string>
+    <string name="consumption_purpose">Purpose (Optional)</string>
+    <string name="consumption_date">Date</string>
+    <string name="consumption_value">Value</string>
+    <string name="last_sales_price">Last Sales Price</string>
+    <string name="no_sales">No sales recorded</string>
+    <string name="no_consumption">No consumption recorded</string>
+    
+    <!-- Loans -->
+    <string name="loans_title">Loans</string>
+    <string name="loans_summary">Loans Summary</string>
+    <string name="total_debt">Total Debt</string>
+    <string name="monthly_payment">Monthly Payment</string>
+    <string name="active_loans">Active Loans</string>
+    <string name="paid_loans">Fully Paid Loans</string>
+    <string name="add_loan">Add Loan</string>
+    <string name="edit_loan">Edit Loan</string>
+    <string name="loan_details">Loan Details</string>
+    <string name="loan_principal">Principal Amount</string>
+    <string name="loan_interest_rate" formatted="false">Interest Rate (%%)</string>
+    <string name="loan_period">Period (months)</string>
+    <string name="loan_start_date">Start Date</string>
+    <string name="loan_end_date">End Date</string>
+    <string name="loan_lender">Lender</string>
+    <string name="loan_purpose">Purpose (Optional)</string>
+    <string name="loan_calculation">Loan Calculation</string>
+    <string name="total_interest">Total Interest</string>
+    <string name="total_owed">Total Owed</string>
+    <string name="monthly_payment_amount">Monthly Payment</string>
+    <string name="payment_history">Payment History</string>
+    <string name="record_payment">Record Payment</string>
+    <string name="payments_made">Payments Made</string>
+    <string name="total_left">Total Left</string>
+    <string name="loan_fully_paid">Fully Paid</string>
+    <string name="payment_recorded">Payment recorded successfully</string>
+    <string name="cannot_delete_loan">Cannot delete loan with payments made</string>
+    <string name="no_active_loans">No active loans</string>
+    <string name="no_paid_loans">No paid loans</string>
+    
+    <!-- Financial Reports -->
+    <string name="reports_title">Financial Reports</string>
+    <string name="cash_flow_report">Cash Flow</string>
+    <string name="profitability_report">Profitability</string>
+    <string name="balance_sheet_report">Balance Sheet</string>
+    <string name="select_period">Select Period</string>
+    <string name="generate_report">Generate Report</string>
+    <string name="export_pdf">Export to PDF</string>
+    
+    <!-- Cash Flow -->
+    <string name="cash_flow_title">Cash Flow Report</string>
+    <string name="monthly_breakdown">Monthly Breakdown</string>
+    <string name="month">Month</string>
+    <string name="income_column">Income</string>
+    <string name="expenses_column">Expenses</string>
+    <string name="net_cash_flow">Net Cash Flow</string>
+    <string name="cumulative_balance">Cumulative Balance</string>
+    
+    <!-- Profitability -->
+    <string name="profitability_title">Profitability Report</string>
+    <string name="income_section">Income</string>
+    <string name="expenses_section">Expenses</string>
+    <string name="depreciation_section">Depreciation</string>
+    <string name="gross_margin">Gross Margin</string>
+    <string name="ebitda">EBITDA</string>
+    <string name="net_balance">Net Balance</string>
+    <string name="gross_margin_percent" formatted="false">Gross Margin %%</string>
+    <string name="net_margin_percent" formatted="false">Net Margin %%</string>
+    
+    <!-- Balance Sheet -->
+    <string name="balance_sheet_title">Balance Sheet</string>
+    <string name="as_of_date">As of %1$s</string>
+    <string name="assets_section">Assets</string>
+    <string name="current_assets">Current Assets</string>
+    <string name="fixed_assets">Fixed Assets</string>
+    <string name="total_assets">Total Assets</string>
+    <string name="liabilities_section">Liabilities</string>
+    <string name="loans_payable">Loans Payable</string>
+    <string name="wages_payable">Wages Payable</string>
+    <string name="total_liabilities">Total Liabilities</string>
+    <string name="equity_section">Equity</string>
+    <string name="net_worth">Net Worth</string>
+    <string name="oil_stock_value">Oil Stock Value</string>
+    <string name="bunches_value">Bunches Value</string>
+    <string name="cash">Cash</string>
+    
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="enterprise_information">Enterprise Information</string>
+    <string name="enterprise_name">Enterprise Name</string>
+    <string name="enterprise_location">Location</string>
+    <string name="enterprise_phone">Phone Number</string>
+    <string name="farms_section">Farms</string>
+    <string name="workers_section">Workers</string>
+    <string name="production_settings">Production Settings</string>
+    <string name="authentication_section">Authentication</string>
+    <string name="data_management">Data Management</string>
+    <string name="about_section">About</string>
+    <string name="add_farm">Add Farm</string>
+    <string name="edit_farm">Edit Farm</string>
+    <string name="farm_name">Farm Name</string>
+    <string name="farm_location">Location</string>
+    <string name="mature_palms">Mature Palms</string>
+    <string name="immature_palms">Immature Palms</string>
+    <string name="total_palms">Total Palms</string>
+    <string name="add_worker">Add Worker</string>
+    <string name="edit_worker">Edit Worker</string>
+    <string name="worker_name">Worker Name</string>
+    <string name="worker_phone">Phone Number</string>
+    <string name="worker_specialty">Specialty</string>
+    <string name="worker_status">Status</string>
+    <string name="worker_active">Active</string>
+    <string name="worker_inactive">Inactive</string>
+    <string name="season_start_month">Season Start Month</string>
+    <string name="expected_bunches">Expected Bunches</string>
+    <string name="tonnage">Tonnage (bunches per tonne)</string>
+    <string name="change_authentication">Change Authentication</string>
+    <string name="current_auth_method">Current Authentication Method</string>
+    <string name="backup_database">Backup Database</string>
+    <string name="restore_database">Restore Database</string>
+    <string name="app_version">App Version</string>
+    <string name="no_farms">No farms added</string>
+    <string name="no_workers">No workers added</string>
+    <string name="empty_farms_message">Tap + to add your first farm</string>
+    <string name="empty_workers_message">Tap + to add your first worker</string>
+    
+    <!-- Analytics -->
+    <string name="analytics_title">Analytics</string>
+    <string name="production_kpis">Production KPIs</string>
+    <string name="financial_kpis">Financial KPIs</string>
+    <string name="all_time">All-Time</string>
+    <string name="current_cycle_label">Current</string>
+    <string name="percentage_change" formatted="false">%% Change</string>
+    <string name="cost_per_bunch">Cost/Bunch</string>
+    <string name="profit_margin">Profit Margin</string>
+    <string name="roi" formatted="false">ROI (%%)</string>
+    <string name="total_revenue">Total Revenue</string>
+    <string name="total_costs">Total Costs</string>
+    <string name="net_profit">Net Profit</string>
+    <string name="income_per_bunch">Income/Bunch</string>
+    <string name="profit_per_bunch">Profit/Bunch</string>
+    <string name="charts_section">Charts</string>
+    <string name="income_expenses_chart">Income vs Expenses</string>
+    <string name="production_trends_chart">Production Trends</string>
+    <string name="expense_breakdown_chart">Expense Breakdown</string>
+    <string name="export_analytics">Export Analytics</string>
+    
+    <!-- Cash Transactions -->
+    <string name="cash_transactions_title">Cash Transactions</string>
+    <string name="cash_transactions_subtitle">Track cash flow and balance</string>
+    <string name="current_cash_balance">Current Cash Balance</string>
+    <string name="cash_in">Cash In</string>
+    <string name="cash_out">Cash Out</string>
+    <string name="net_flow">Net Flow</string>
+    <string name="transaction_history">Transaction History</string>
+    <string name="no_cash_transactions">No cash transactions</string>
+    <string name="add_cash_transaction_hint">Tap + to record opening balance or cash transactions</string>
+    <string name="add_transaction">Add Transaction</string>
+    <string name="transaction_type">Transaction Type</string>
+    <string name="category_optional">Category (Optional)</string>
+    <string name="delete_transaction_confirmation">Delete transaction: %1$s?</string>
+    <string name="amount">Amount</string>
+    <string name="date">Date</string>
+    <string name="description">Description</string>
+    
+    <!-- Transaction Types -->
+    <string name="transaction_type_opening_balance">Opening Balance</string>
+    <string name="transaction_type_cash_in">Cash In</string>
+    <string name="transaction_type_cash_out">Cash Out</string>
+    <string name="transaction_type_adjustment">Adjustment</string>
+    
+    <!-- Cash Transaction Validation Errors -->
+    <string name="error_transaction_type_required">Transaction type is required</string>
+    <string name="error_amount_invalid">Amount must be greater than 0</string>
+
+    <!-- Additional Missing Strings -->
+    <string name="last_price">Last Price</string>
+    <string name="quantity_gallons">Quantity (Gallons)</string>
+    <string name="purpose_optional">Purpose (Optional)</string>
+    <string name="valued_at">Valued at</string>
+    <string name="valued_at_last_sales_price">Valued at last sales price</string>
+    <string name="save">Save</string>
+    <string name="amount_xaf">Amount (XAF)</string>
+    <string name="category">Category</string>
+    <string name="receipt_photo_optional">Receipt photo (optional)</string>
+    <string name="take_photo">Take photo</string>
+    <string name="select_photo">Select photo</string>
+    
+    <!-- Missing resources for layouts -->
+    <string name="receipt_preview">Receipt Preview</string>
+    <string name="item_name">Item Name</string>
+    <string name="type">Type</string>
+    <string name="start_date">Start Date</string>
+    <string name="life_span_years">Life Span (years)</string>
+    <string name="depreciation_info">Depreciation is calculated monthly over the asset\'s life span.</string>
+    <string name="lender_name">Lender Name</string>
+    <string name="principal_amount">Principal Amount</string>
+    <string name="interest_rate">Interest Rate</string>
+    <string name="period_months">Period (months)</string>
+    <string name="end_date">End Date</string>
+    <string name="quantity">Quantity</string>
+    <string name="unit">Unit</string>
+    <string name="unit_price">Unit Price</string>
+    <string name="total_amount">Total Amount</string>
+    <string name="buyer_name_optional">Buyer (Optional)</string>
+    <string name="balance_sheet">Balance Sheet</string>
+    <string name="cash_flow">Cash Flow</string>
+    <string name="expense_list">Expense List</string>
+    <string name="no_expenses_yet">No expenses yet</string>
+    <string name="fixed_costs">Fixed Costs</string>
+    <string name="total_value_left">Total Value Left</string>
+    <string name="total_depreciation">Total Depreciation</string>
+    <string name="all">All</string>
+    <string name="total_remaining">Total Remaining</string>
+    <string name="fully_paid">Fully Paid</string>
+    <string name="period">Period</string>
+    <string name="loans">Loans</string>
+    <string name="expand">Expand</string>
+    <string name="profitability">Profitability</string>
+    <string name="profitability_description">Profitability description</string>
+    <string name="reports">Reports</string>
+    <string name="select_report_type">Select report type</string>
+    <string name="cash_flow_description">Cash flow description</string>
+    <string name="navigate">Navigate</string>
+    <string name="balance_sheet_description">Balance sheet description</string>
+    <string name="paid">Paid</string>
+    <string name="advances">Advances</string>
+    <string name="tasks_breakdown">Tasks breakdown</string>
+    <string name="wages">Wages</string>
+    <string name="wages_left_to_pay">Wages left to pay</string>
+    <string name="process_all">Process all</string>
+    <string name="paid_wages">Paid wages</string>
+    <string name="no_paid_wages">No paid wages</string>
+    <string name="consumption">Consumption</string>
+    <string name="has_receipt">Has receipts</string>
+    <string name="fixed_cost">Fixed Cost</string>
+    <string name="depreciation">Depreciation</string>
+    <string name="loan">Loan</string>
+    <string name="payment_progress">Payment progress</string>
+    <string name="sale">Sale</string>
+    <string name="worker">Worker</string>
+    <string name="xaf">XAF</string>
+    <string name="category_all">All categories</string>
+    <string name="category_supplies">Supplies</string>
+    <string name="category_maintenance">Maintenance</string>
+    <string name="category_fuel">Fuel</string>
+    <string name="category_transport">Transport</string>
+    <string name="sales_income">Sales income</string>
+    <string name="consumption_income">Consumption income</string>
+    <string name="operational_expenses">Operational expenses</string>
+    <string name="profitability_metrics">Profitability metrics</string>
+    <string name="assets">Assets</string>
+    <string name="total_current_assets">Total current assets</string>
+    <string name="fixed_assets_value">Fixed assets value</string>
+    <string name="liabilities">Liabilities</string>
+    <string name="equity">Equity</string>
+    <string name="balance_verification">Balance verification</string>
+    <string name="liabilities_equity">Liabilities equity</string>
+    <string name="cash_flow_summary">Cash flow summary</string>
+    <string name="no_data_available">No data available</string>
+    <string name="category_column">Category:</string>
+    <string name="bunches_per_drum">Bunches/Drum</string>
+    <string name="oil_per_drum">Oil/Drum (gal)</string>
+    <string name="version_number">Version 1.1.2</string>
+    <string name="category_milling">Milling</string>
+    <string name="category_picknut">Loose Nuts</string>
+    <string name="category_carrying">Transport to mill</string>
+    <string name="category_stacking">Stacking fronds</string>
+    <string name="category_threshing">Threshing bunches</string>
+    <string name="benefit_to_cost_ratio">Benefit to Cost Ratio (BCR)</string>
+    <string name="profit_rate">Profit Rate (PR)</string>
+    <string name="economics_analysis_metrics">Economics Analysis Metrics</string>
+</resources>

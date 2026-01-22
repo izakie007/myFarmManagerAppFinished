@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="8dp"
+    app:cardElevation="2dp"
+    app:contentPadding="16dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- Lender Icon -->
+        <ImageView
+            android:id="@+id/ivIcon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:contentDescription="@string/loan"
+            android:src="@drawable/ic_money"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="?attr/colorError" />
+
+        <!-- Lender Name -->
+        <TextView
+            android:id="@+id/tvLender"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="8dp"
+            android:textAppearance="?attr/textAppearanceBodyLarge"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@id/tvTotalLeft"
+            app:layout_constraintStart_toEndOf="@id/ivIcon"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Bank XYZ" />
+
+        <!-- Purpose (Optional) -->
+        <TextView
+            android:id="@+id/tvPurpose"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textAppearance="?attr/textAppearanceBodySmall"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:textStyle="italic"
+            app:layout_constraintEnd_toEndOf="@id/tvLender"
+            app:layout_constraintStart_toStartOf="@id/tvLender"
+            app:layout_constraintTop_toBottomOf="@id/tvLender"
+            tools:text="Farm expansion" />
+
+        <!-- Principal and Interest Rate -->
+        <TextView
+            android:id="@+id/tvPrincipal"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            app:layout_constraintEnd_toStartOf="@id/tvInterestRate"
+            app:layout_constraintStart_toStartOf="@id/tvLender"
+            app:layout_constraintTop_toBottomOf="@id/tvPurpose"
+            tools:text="1,000,000 XAF" />
+
+        <TextView
+            android:id="@+id/tvInterestRate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:textColor="?attr/colorError"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@id/tvLender"
+            app:layout_constraintTop_toTopOf="@id/tvPrincipal"
+            tools:text="@ 12%" />
+
+        <!-- Start Date -->
+        <TextView
+            android:id="@+id/tvStartDate"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textAppearance="?attr/textAppearanceBodySmall"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            app:layout_constraintEnd_toEndOf="@id/tvLender"
+            app:layout_constraintStart_toStartOf="@id/tvLender"
+            app:layout_constraintTop_toBottomOf="@id/tvPrincipal"
+            tools:text="Started: Jan 15, 2025" />
+
+        <!-- Total Left (Right Side) -->
+        <TextView
+            android:id="@+id/tvTotalLeft"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?attr/textAppearanceTitleLarge"
+            android:textColor="?attr/colorError"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="920,000" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="XAF"
+            android:textAppearance="?attr/textAppearanceBodySmall"
+            app:layout_constraintEnd_toEndOf="@id/tvTotalLeft"
+            app:layout_constraintTop_toBottomOf="@id/tvTotalLeft"
+            tools:ignore="HardcodedText" />
+
+        <!-- Divider -->
+        <View
+            android:id="@+id/divider"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginTop="12dp"
+            android:background="?attr/colorOutline"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/tvLender"
+            app:layout_constraintTop_toBottomOf="@id/tvStartDate" />
+
+        <!-- Payment Progress Section -->
+        <TextView
+            android:id="@+id/tvPaymentLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/payment_progress"
+            android:textAppearance="?attr/textAppearanceBodySmall"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            app:layout_constraintStart_toStartOf="@id/tvLender"
+            app:layout_constraintTop_toBottomOf="@id/divider" />
+
+        <TextView
+            android:id="@+id/tvPaymentsMade"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?attr/textAppearanceBodySmall"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tvPaymentLabel"
+            tools:text="3 / 12" />
+
+        <!-- Progress Bar -->
+        <ProgressBar
+            android:id="@+id/progressPayments"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_width="0dp"
+            android:layout_height="8dp"
+            android:layout_marginTop="8dp"
+            android:max="100"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/tvLender"
+            app:layout_constraintTop_toBottomOf="@id/tvPaymentLabel"
+            tools:progress="25" />
+
+        <!-- Monthly Payment -->
+        <TextView
+            android:id="@+id/tvMonthlyLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/monthly_payment"
+            android:textAppearance="?attr/textAppearanceBodySmall"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            app:layout_constraintStart_toStartOf="@id/tvLender"
+            app:layout_constraintTop_toBottomOf="@id/progressPayments" />
+
+        <TextView
+            android:id="@+id/tvMonthlyPayment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tvMonthlyLabel"
+            tools:text="83,333 XAF" />
+
+        <!-- Fully Paid Badge -->
+        <TextView
+            android:id="@+id/tvFullyPaid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_badge_success"
+            android:paddingStart="8dp"
+            android:paddingTop="4dp"
+            android:paddingEnd="8dp"
+            android:paddingBottom="4dp"
+            android:text="@string/fully_paid"
+            android:textAppearance="?attr/textAppearanceBodySmall"
+            android:textColor="?attr/colorOnPrimary"
+            android:textStyle="bold"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="@id/tvLender"
+            app:layout_constraintTop_toBottomOf="@id/tvMonthlyLabel"
+            tools:visibility="visible" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

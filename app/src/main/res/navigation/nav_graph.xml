@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/navigation_dashboard">
+
+    <fragment
+        android:id="@+id/navigation_dashboard"
+        android:name="com.palmfarm.manager.ui.dashboard.DashboardFragment"
+        android:label="@string/nav_dashboard" />
+
+    <fragment
+        android:id="@+id/navigation_tasks"
+        android:name="com.palmfarm.manager.ui.tasks.TasksFragment"
+        android:label="@string/nav_tasks">
+        <action
+            android:id="@+id/action_tasks_to_addEditTask"
+            app:destination="@id/addEditTaskFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/addEditTaskFragment"
+        android:name="com.palmfarm.manager.ui.tasks.AddEditTaskFragment"
+        android:label="@string/add_task">
+        <argument
+            android:name="taskId"
+            android:defaultValue="0"
+            app:argType="integer" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_production"
+        android:name="com.palmfarm.manager.ui.production.ProductionFragment"
+        android:label="@string/nav_production">
+        <action
+            android:id="@+id/action_production_to_addHarvest"
+            app:destination="@id/addHarvestFragment" />
+        <action
+            android:id="@+id/action_production_to_addMilling"
+            app:destination="@id/addMillingFragment" />
+        <action
+            android:id="@+id/action_production_to_addLooseNuts"
+            app:destination="@id/addLooseNutsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/addHarvestFragment"
+        android:name="com.palmfarm.manager.ui.production.AddHarvestFragment"
+        android:label="@string/add_harvest" />
+
+    <fragment
+        android:id="@+id/addMillingFragment"
+        android:name="com.palmfarm.manager.ui.production.AddMillingFragment"
+        android:label="@string/add_milling" />
+
+    <fragment
+        android:id="@+id/addLooseNutsFragment"
+        android:name="com.palmfarm.manager.ui.production.AddLooseNutsFragment"
+        android:label="@string/add_loose_nuts" />
+
+    <fragment
+        android:id="@+id/navigation_finances"
+        android:name="com.palmfarm.manager.ui.finances.FinancesFragment"
+        android:label="@string/nav_finances">
+        <action
+            android:id="@+id/action_finances_to_expenses"
+            app:destination="@id/expensesFragment" />
+        <action
+            android:id="@+id/action_finances_to_fixedCosts"
+            app:destination="@id/fixedCostsFragment" />
+        <action
+            android:id="@+id/action_finances_to_wages"
+            app:destination="@id/wagesFragment" />
+        <action
+            android:id="@+id/action_finances_to_income"
+            app:destination="@id/incomeFragment" />
+        <action
+            android:id="@+id/action_finances_to_loans"
+            app:destination="@id/loansFragment" />
+        <action
+            android:id="@+id/action_finances_to_cashTransactions"
+            app:destination="@id/cashTransactionsFragment" />
+        <action
+            android:id="@+id/action_finances_to_reports"
+            app:destination="@id/reportsFragment" />
+    </fragment>
+
+    <!-- Expenses Flow -->
+    <fragment
+        android:id="@+id/expensesFragment"
+        android:name="com.palmfarm.manager.ui.finances.expenses.ExpensesFragment"
+        android:label="@string/expenses_title">
+        <action
+            android:id="@+id/action_expenses_to_addEditExpense"
+            app:destination="@id/addEditExpenseFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/addEditExpenseFragment"
+        android:name="com.palmfarm.manager.ui.finances.expenses.AddEditExpenseFragment"
+        android:label="@string/add_expense">
+        <argument
+            android:name="expenseId"
+            android:defaultValue="0"
+            app:argType="integer" />
+    </fragment>
+
+    <!-- Fixed Costs Flow -->
+    <fragment
+        android:id="@+id/fixedCostsFragment"
+        android:name="com.palmfarm.manager.ui.finances.fixedcosts.FixedCostsFragment"
+        android:label="@string/fixed_costs_title">
+        <action
+            android:id="@+id/action_fixedCosts_to_addEdit"
+            app:destination="@id/addEditFixedCostFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/addEditFixedCostFragment"
+        android:name="com.palmfarm.manager.ui.finances.fixedcosts.AddEditFixedCostFragment"
+        android:label="@string/add_fixed_cost">
+        <argument
+            android:name="fixedCostId"
+            android:defaultValue="0"
+            app:argType="integer" />
+    </fragment>
+
+    <!-- Wages Flow -->
+    <fragment
+        android:id="@+id/wagesFragment"
+        android:name="com.palmfarm.manager.ui.finances.wages.WagesFragment"
+        android:label="@string/wages_title">
+        <action
+            android:id="@+id/action_wages_to_detail"
+            app:destination="@id/wageDetailFragment" />
+        <action
+            android:id="@+id/action_wages_to_addAdvancePaymentFragment"
+            app:destination="@id/addAdvancePaymentFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/wageDetailFragment"
+        android:name="com.palmfarm.manager.ui.finances.wages.WageDetailFragment"
+        android:label="@string/wage_details">
+        <argument
+            android:name="workerId"
+            android:defaultValue="-1"
+            app:argType="integer" />
+        <argument
+            android:name="paymentId"
+            android:defaultValue="-1"
+            app:argType="integer" />
+        <action
+            android:id="@+id/action_wageDetail_to_addAdvancePaymentFragment"
+            app:destination="@id/addAdvancePaymentFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/addAdvancePaymentFragment"
+        android:name="com.palmfarm.manager.ui.finances.wages.AddAdvancePaymentFragment"
+        android:label="@string/add_advance">
+        <argument
+            android:name="workerId"
+            android:defaultValue="-1"
+            app:argType="integer" />
+    </fragment>
+
+    <!-- Income Flow -->
+    <fragment
+        android:id="@+id/incomeFragment"
+        android:name="com.palmfarm.manager.ui.finances.income.IncomeFragment"
+        android:label="@string/income_title">
+        <action
+            android:id="@+id/action_income_to_addSale"
+            app:destination="@id/addSaleFragment" />
+        <action
+            android:id="@+id/action_income_to_addConsumption"
+            app:destination="@id/addConsumptionFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/addSaleFragment"
+        android:name="com.palmfarm.manager.ui.finances.income.AddSaleFragment"
+        android:label="@string/add_sale" />
+
+    <fragment
+        android:id="@+id/addConsumptionFragment"
+        android:name="com.palmfarm.manager.ui.finances.income.AddConsumptionFragment"
+        android:label="@string/add_consumption" />
+
+    <!-- Loans Flow -->
+    <fragment
+        android:id="@+id/loansFragment"
+        android:name="com.palmfarm.manager.ui.finances.loans.LoansFragment"
+        android:label="@string/loans_title">
+        <action
+            android:id="@+id/action_loans_to_add"
+            app:destination="@id/addLoanFragment" />
+        <action
+            android:id="@+id/action_loans_to_detail"
+            app:destination="@id/loanDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/addLoanFragment"
+        android:name="com.palmfarm.manager.ui.finances.loans.AddLoanFragment"
+        android:label="@string/add_loan">
+        <argument
+            android:name="loanId"
+            android:defaultValue="0"
+            app:argType="integer" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/loanDetailFragment"
+        android:name="com.palmfarm.manager.ui.finances.loans.LoanDetailFragment"
+        android:label="@string/loan_details">
+        <argument
+            android:name="loanId"
+            app:argType="integer" />
+    </fragment>
+
+    <!-- Cash Transactions Flow -->
+    <fragment
+        android:id="@+id/cashTransactionsFragment"
+        android:name="com.palmfarm.manager.ui.finances.cash.CashTransactionFragment"
+        android:label="@string/cash_transactions_title">
+        <action
+            android:id="@+id/action_cashTransactions_to_addEditTransaction"
+            app:destination="@id/addEditCashTransactionFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/addEditCashTransactionFragment"
+        android:name="com.palmfarm.manager.ui.finances.cash.AddEditCashTransactionFragment"
+        android:label="@string/add_transaction">
+        <argument
+            android:name="transactionId"
+            android:defaultValue="0"
+            app:argType="integer" />
+    </fragment>
+
+    <!-- Financial Reports Flow -->
+    <fragment
+        android:id="@+id/reportsFragment"
+        android:name="com.palmfarm.manager.ui.finances.reports.ReportsFragment"
+        android:label="@string/reports_title">
+        <action
+            android:id="@+id/action_reports_to_cashFlow"
+            app:destination="@id/cashFlowFragment" />
+        <action
+            android:id="@+id/action_reports_to_profitability"
+            app:destination="@id/profitabilityFragment" />
+        <action
+            android:id="@+id/action_reports_to_balanceSheet"
+            app:destination="@id/balanceSheetFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/cashFlowFragment"
+        android:name="com.palmfarm.manager.ui.finances.reports.CashFlowFragment"
+        android:label="@string/cash_flow_title" />
+
+    <fragment
+        android:id="@+id/profitabilityFragment"
+        android:name="com.palmfarm.manager.ui.finances.reports.ProfitabilityFragment"
+        android:label="@string/profitability_title" />
+
+    <fragment
+        android:id="@+id/balanceSheetFragment"
+        android:name="com.palmfarm.manager.ui.finances.reports.BalanceSheetFragment"
+        android:label="@string/balance_sheet_title" />
+
+    <!-- Settings Flow -->
+    <fragment
+        android:id="@+id/navigation_settings"
+        android:name="com.palmfarm.manager.ui.settings.SettingsFragment"
+        android:label="@string/nav_settings">
+        <action
+            android:id="@+id/action_settings_to_addEditFarm"
+            app:destination="@id/addEditFarmFragment" />
+        <action
+            android:id="@+id/action_settings_to_addEditWorker"
+            app:destination="@id/addEditWorkerFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/addEditFarmFragment"
+        android:name="com.palmfarm.manager.ui.settings.AddEditFarmFragment"
+        android:label="@string/add_farm">
+        <argument
+            android:name="farmId"
+            android:defaultValue="0"
+            app:argType="integer" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/addEditWorkerFragment"
+        android:name="com.palmfarm.manager.ui.settings.AddEditWorkerFragment"
+        android:label="@string/add_worker">
+        <argument
+            android:name="workerId"
+            android:defaultValue="0"
+            app:argType="integer" />
+    </fragment>
+
+    <!-- Analytics -->
+    <fragment
+        android:id="@+id/navigation_analytics"
+        android:name="com.palmfarm.manager.ui.analytics.AnalyticsFragment"
+        android:label="@string/nav_analytics" />
+
+</navigation>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Material Design 3 Primary Colors (Farm/Nature theme) -->
+    <color name="md_theme_light_primary">#2E7D32</color>
+    <color name="md_theme_light_onPrimary">#FFFFFF</color>
+    <color name="md_theme_light_primaryContainer">#A5D6A7</color>
+    <color name="md_theme_light_onPrimaryContainer">#1B5E20</color>
+
+    <!-- Secondary Colors -->
+    <color name="md_theme_light_secondary">#558B2F</color>
+    <color name="md_theme_light_onSecondary">#FFFFFF</color>
+    <color name="md_theme_light_secondaryContainer">#C5E1A5</color>
+    <color name="md_theme_light_onSecondaryContainer">#33691E</color>
+
+    <!-- Background Colors -->
+    <color name="md_theme_light_background">#F5F5F5</color>
+    <color name="md_theme_light_onBackground">#1C1B1F</color>
+    <color name="md_theme_light_surface">#FFFFFF</color>
+    <color name="md_theme_light_onSurface">#1C1B1F</color>
+    <color name="ic_launcher_background">#201F1F</color>
+
+    <!-- Status Colors -->
+    <color name="status_success">#4CAF50</color>
+    <color name="status_warning">#FF9800</color>
+    <color name="status_error">#F44336</color>
+    <color name="status_info">#2196F3</color>
+    <color name="status_pending">#FF9800</color>
+    <color name="status_completed">#4CAF50</color>
+
+    <!-- Additional Colors -->
+    <color name="income_green">#4CAF50</color>
+    <color name="expense_red">#F44336</color>
+    <color name="chart_line_1">#4CAF50</color>
+    <color name="chart_line_2">#F44336</color>
+    <color name="chart_line_3">#2196F3</color>
+    <color name="green_500">#4CAF50</color>
+    <color name="md_theme_error">#F44336</color>
+
+    <!-- Common Color Aliases -->
+    <color name="primary">#2E7D32</color>
+    <color name="success_green">#4CAF50</color>
+    <color name="error_red">#F44336</color>
+    
+    <!-- Text Colors -->
+    <color name="text_primary">#1C1B1F</color>
+    <color name="text_secondary">#666666</color>
+
+    <!-- Black and White -->
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
+    <color name="night_gray">#1e1f21</color>
+    <color name="night_gray_2">#2b2d30</color>
+</resources>
