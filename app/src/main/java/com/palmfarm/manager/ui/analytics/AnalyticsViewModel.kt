@@ -20,7 +20,8 @@ class AnalyticsViewModel(
     private val wagePaymentDao: WagePaymentDao,
     private val advancePaymentDao: AdvancePaymentDao,
     private val saleDao: SaleDao,
-    private val consumptionDao: ConsumptionDao
+    private val consumptionDao: ConsumptionDao,
+    private val fixedCostDao: FixedCostDao
 ) : BaseViewModel() {
 
     /**
@@ -94,7 +95,8 @@ class AnalyticsViewModel(
         wagePaymentDao.getTotalWagesPaid(),
         saleDao.getTotalSalesAmount(),
         consumptionDao.getTotalConsumptionValue(),
-        advancePaymentDao.getTotalAdvances()
+        advancePaymentDao.getTotalAdvances(),
+        fixedCostDao.getAllFixedCosts()
     ) { values ->
 
         val currentCycle = values[0] as? com.palmfarm.manager.data.database.entities.ProductionCycle
@@ -105,13 +107,26 @@ class AnalyticsViewModel(
         val totalSales = (values[4] as Number).toDouble()
         val totalConsumption = (values[5] as Number).toDouble()
         val totalAdvances = (values[6] as Number).toDouble()
+        @Suppress("UNCHECKED_CAST")
+        val fixedCosts = values[7] as List<com.palmfarm.manager.data.database.entities.FixedCost>
 
         val currentCycleId = currentCycle?.id ?: 0
         val currentHarvests = allHarvests.filter { it.cycleId == currentCycleId }
         val currentTotalBunches = currentHarvests.sumOf { it.numberOfBunches }
 
+        // Calculate total depreciation
+        val totalDepreciation = fixedCosts.sumOf { fixedCost ->
+            val monthsElapsed = calculateMonthsElapsed(fixedCost.date, System.currentTimeMillis())
+            val totalMonths = fixedCost.lifeSpanYears * 12
+            if (monthsElapsed >= totalMonths) {
+                fixedCost.amount
+            } else {
+                (fixedCost.amount / totalMonths) * monthsElapsed
+            }
+        }
+
         val totalWages = totalWagesNet + totalAdvances
-        val totalCosts = totalExpenses + totalWages
+        val totalCosts = totalExpenses + totalWages + totalDepreciation
 
         val currentCostPerBunch = if (currentTotalBunches > 0) {
             totalCosts / currentTotalBunches
@@ -355,7 +370,8 @@ class AnalyticsViewModel(
         wagePaymentDao.getAllWagePayments(),
         advancePaymentDao.getAllAdvancePayments(),
         harvestDao.getAllHarvests(),
-        millingDao.getAllMillings()
+        millingDao.getAllMillings(),
+        fixedCostDao.getAllFixedCosts()
     ) { values ->
         @Suppress("UNCHECKED_CAST")
         val sales = values[0] as List<com.palmfarm.manager.data.database.entities.Sale>
@@ -371,9 +387,24 @@ class AnalyticsViewModel(
         val harvests = values[5] as List<com.palmfarm.manager.data.database.entities.Harvest>
         @Suppress("UNCHECKED_CAST")
         val millings = values[6] as List<com.palmfarm.manager.data.database.entities.Milling>
+        @Suppress("UNCHECKED_CAST")
+        val fixedCosts = values[7] as List<com.palmfarm.manager.data.database.entities.FixedCost>
 
         val lastSixMonthLabels = getLastSixMonthLabels()
         val monthlyMetrics = initializeMonthlyMetrics(lastSixMonthLabels)
+        
+        // Calculate monthly depreciation for each fixed cost
+        fixedCosts.forEach { fixedCost ->
+            val monthlyDepreciation = fixedCost.amount / (fixedCost.lifeSpanYears * 12)
+            val purchaseMonthKey = getMonthKey(fixedCost.date)
+            
+            // Add depreciation to each month from purchase date onwards
+            lastSixMonthLabels.forEach { monthKey ->
+                if (monthKey >= purchaseMonthKey) {
+                    monthlyMetrics[monthKey]?.cost = monthlyMetrics[monthKey]?.cost?.plus(monthlyDepreciation) ?: 0.0
+                }
+            }
+        }
 
         harvests.forEach { harvest ->
             val key = getMonthKey(harvest.date)
@@ -411,19 +442,19 @@ class AnalyticsViewModel(
         }
 
         // Income vs Expenses data (last 6 months)
-        val incomeExpensesData = calculateIncomeExpensesByMonth(sales, consumption, expenses, wages, advances)
+        val incomeExpensesData = calculateIncomeExpensesByMonth(sales, consumption, expenses, wages, advances, fixedCosts)
 
         // Production trends data (last 6 months)
         val productionData = calculateProductionByMonth(harvests, millings)
 
         // Expense breakdown (current cycle or all-time)
-        val expenseBreakdown = calculateExpenseBreakdown(expenses, wages, advances)
+        val expenseBreakdown = calculateExpenseBreakdown(expenses, wages, advances, fixedCosts)
 
         // Cost analysis by category
-        val costAnalysis = calculateCostAnalysis(expenses, wages, advances)
+        val costAnalysis = calculateCostAnalysis(expenses, wages, advances, fixedCosts)
 
         // Profitability data (last 6 months)
-        val profitabilityData = calculateProfitability(sales, consumption, expenses, wages, advances)
+        val profitabilityData = calculateProfitability(sales, consumption, expenses, wages, advances, fixedCosts)
 
         val bunchesOnlyData = lastSixMonthLabels.map { label ->
             BunchesPoint(label, monthlyMetrics[label]?.bunches ?: 0)
@@ -455,6 +486,16 @@ class AnalyticsViewModel(
             PerUnitFinancialPoint(label, costPerGallon, incomePerGallon)
         }
 
+        // Calculate cumulative cost and income
+        var cumulativeCost = 0.0
+        var cumulativeIncome = 0.0
+        val cumulativeFinancialData = lastSixMonthLabels.map { label ->
+            val metrics = monthlyMetrics[label] ?: MonthlyMetrics()
+            cumulativeCost += metrics.cost
+            cumulativeIncome += metrics.income
+            CumulativeFinancialPoint(label, cumulativeCost, cumulativeIncome)
+        }
+
         ChartData(
             incomeExpensesData = incomeExpensesData,
             productionData = productionData,
@@ -465,7 +506,8 @@ class AnalyticsViewModel(
             oilOnlyData = oilOnlyData,
             oilToBunchRatioData = oilToBunchRatioData,
             perBunchFinancialData = perBunchFinancialData,
-            perGallonFinancialData = perGallonFinancialData
+            perGallonFinancialData = perGallonFinancialData,
+            cumulativeFinancialData = cumulativeFinancialData
         )
     }
 
@@ -474,7 +516,8 @@ class AnalyticsViewModel(
         consumption: List<com.palmfarm.manager.data.database.entities.Consumption>,
         expenses: List<com.palmfarm.manager.data.database.entities.Expense>,
         wages: List<com.palmfarm.manager.data.database.entities.WagePayment>,
-        advances: List<com.palmfarm.manager.data.database.entities.AdvancePayment>
+        advances: List<com.palmfarm.manager.data.database.entities.AdvancePayment>,
+        fixedCosts: List<com.palmfarm.manager.data.database.entities.FixedCost>
     ): List<IncomeExpensePoint> {
         val labels = getLastSixMonthLabels()
         val monthlyData = labels.associateWith { Pair(0.0, 0.0) }.toMutableMap()
@@ -519,6 +562,19 @@ class AnalyticsViewModel(
             }
         }
         
+        // Add monthly depreciation for each fixed cost
+        fixedCosts.forEach { fixedCost ->
+            val monthlyDepreciation = fixedCost.amount / (fixedCost.lifeSpanYears * 12)
+            val purchaseMonthKey = getMonthKey(fixedCost.date)
+            
+            labels.forEach { monthKey ->
+                if (monthKey >= purchaseMonthKey && monthKey in monthlyData) {
+                    val (income, expense) = monthlyData[monthKey]!!
+                    monthlyData[monthKey] = Pair(income, expense + monthlyDepreciation)
+                }
+            }
+        }
+        
         return labels.map { label ->
             val (income, expense) = monthlyData[label]!!
             IncomeExpensePoint(label, income, expense)
@@ -557,7 +613,8 @@ class AnalyticsViewModel(
     private fun calculateExpenseBreakdown(
         expenses: List<com.palmfarm.manager.data.database.entities.Expense>,
         wages: List<com.palmfarm.manager.data.database.entities.WagePayment>,
-        advances: List<com.palmfarm.manager.data.database.entities.AdvancePayment>
+        advances: List<com.palmfarm.manager.data.database.entities.AdvancePayment>,
+        fixedCosts: List<com.palmfarm.manager.data.database.entities.FixedCost>
     ): Map<String, Double> {
         val breakdown = mutableMapOf<String, Double>()
         
@@ -570,13 +627,28 @@ class AnalyticsViewModel(
             breakdown["Wages"] = totalWages
         }
         
+        // Calculate total depreciation
+        val totalDepreciation = fixedCosts.sumOf { fixedCost ->
+            val monthsElapsed = calculateMonthsElapsed(fixedCost.date, System.currentTimeMillis())
+            val totalMonths = fixedCost.lifeSpanYears * 12
+            if (monthsElapsed >= totalMonths) {
+                fixedCost.amount
+            } else {
+                (fixedCost.amount / totalMonths) * monthsElapsed
+            }
+        }
+        if (totalDepreciation > 0) {
+            breakdown["Depreciation"] = totalDepreciation
+        }
+        
         return breakdown
     }
 
     private fun calculateCostAnalysis(
         expenses: List<com.palmfarm.manager.data.database.entities.Expense>,
         wages: List<com.palmfarm.manager.data.database.entities.WagePayment>,
-        advances: List<com.palmfarm.manager.data.database.entities.AdvancePayment>
+        advances: List<com.palmfarm.manager.data.database.entities.AdvancePayment>,
+        fixedCosts: List<com.palmfarm.manager.data.database.entities.FixedCost>
     ): List<CostItem> {
         val categoryTotals = expenses.groupBy { it.category }
             .mapValues { (_, list) -> list.sumOf { it.amount } }
@@ -592,6 +664,20 @@ class AnalyticsViewModel(
             items.add(CostItem("Wages", totalWages))
         }
         
+        // Calculate total depreciation
+        val totalDepreciation = fixedCosts.sumOf { fixedCost ->
+            val monthsElapsed = calculateMonthsElapsed(fixedCost.date, System.currentTimeMillis())
+            val totalMonths = fixedCost.lifeSpanYears * 12
+            if (monthsElapsed >= totalMonths) {
+                fixedCost.amount
+            } else {
+                (fixedCost.amount / totalMonths) * monthsElapsed
+            }
+        }
+        if (totalDepreciation > 0) {
+            items.add(CostItem("Depreciation", totalDepreciation))
+        }
+        
         return items.sortedByDescending { it.amount }
     }
 
@@ -600,7 +686,8 @@ class AnalyticsViewModel(
         consumption: List<com.palmfarm.manager.data.database.entities.Consumption>,
         expenses: List<com.palmfarm.manager.data.database.entities.Expense>,
         wages: List<com.palmfarm.manager.data.database.entities.WagePayment>,
-        advances: List<com.palmfarm.manager.data.database.entities.AdvancePayment>
+        advances: List<com.palmfarm.manager.data.database.entities.AdvancePayment>,
+        fixedCosts: List<com.palmfarm.manager.data.database.entities.FixedCost>
     ): List<ProfitabilityPoint> {
         val labels = getLastSixMonthLabels()
         val monthlyData = labels.associateWith { Triple(0.0, 0.0, 0.0) }.toMutableMap()
@@ -645,6 +732,19 @@ class AnalyticsViewModel(
             }
         }
         
+        // Add monthly depreciation for each fixed cost
+        fixedCosts.forEach { fixedCost ->
+            val monthlyDepreciation = fixedCost.amount / (fixedCost.lifeSpanYears * 12)
+            val purchaseMonthKey = getMonthKey(fixedCost.date)
+            
+            labels.forEach { monthKey ->
+                if (monthKey >= purchaseMonthKey && monthKey in monthlyData) {
+                    val (revenue, costs, _) = monthlyData[monthKey]!!
+                    monthlyData[monthKey] = Triple(revenue, costs + monthlyDepreciation, 0.0)
+                }
+            }
+        }
+        
         return labels.map { label ->
             val (revenue, costs, _) = monthlyData[label]!!
             val profit = revenue - costs
@@ -666,6 +766,19 @@ class AnalyticsViewModel(
 
     private fun initializeMonthlyMetrics(labels: List<String>): MutableMap<String, MonthlyMetrics> {
         return labels.associateWith { MonthlyMetrics() }.toMutableMap()
+    }
+
+    /**
+     * Calculate months elapsed between two timestamps
+     */
+    private fun calculateMonthsElapsed(startMillis: Long, endMillis: Long): Int {
+        val startCalendar = Calendar.getInstance().apply { timeInMillis = startMillis }
+        val endCalendar = Calendar.getInstance().apply { timeInMillis = endMillis }
+
+        val yearsDiff = endCalendar.get(Calendar.YEAR) - startCalendar.get(Calendar.YEAR)
+        val monthsDiff = endCalendar.get(Calendar.MONTH) - startCalendar.get(Calendar.MONTH)
+
+        return yearsDiff * 12 + monthsDiff
     }
 }
 
@@ -746,7 +859,8 @@ data class ChartData(
     val oilOnlyData: List<OilPoint>,
     val oilToBunchRatioData: List<OilToBunchRatioPoint>,
     val perBunchFinancialData: List<PerUnitFinancialPoint>,
-    val perGallonFinancialData: List<PerUnitFinancialPoint>
+    val perGallonFinancialData: List<PerUnitFinancialPoint>,
+    val cumulativeFinancialData: List<CumulativeFinancialPoint>
 )
 
 /**
@@ -804,6 +918,12 @@ data class PerUnitFinancialPoint(
     val label: String,
     val costPerUnit: Double,
     val incomePerUnit: Double
+)
+
+data class CumulativeFinancialPoint(
+    val label: String,
+    val cumulativeCost: Double,
+    val cumulativeIncome: Double
 )
 
 private data class MonthlyMetrics(

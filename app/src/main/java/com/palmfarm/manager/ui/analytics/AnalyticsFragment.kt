@@ -55,6 +55,7 @@ class AnalyticsFragment : BaseFragment<FragmentAnalyticsBinding>() {
         setupOilRatioChart()
         setupPerBunchFinancialChart()
         setupPerGallonFinancialChart()
+        setupCumulativeFinancialChart()
     }
 
     /**
@@ -323,6 +324,33 @@ class AnalyticsFragment : BaseFragment<FragmentAnalyticsBinding>() {
         }
     }
 
+    private fun setupCumulativeFinancialChart() {
+        binding.lineChartCumulativeFinancial.apply {
+            description.isEnabled = false
+            setTouchEnabled(true)
+            setDragEnabled(true)
+            setScaleEnabled(true)
+            setPinchZoom(true)
+            setDrawGridBackground(false)
+
+            xAxis.position = XAxis.XAxisPosition.BOTTOM
+            xAxis.setDrawGridLines(false)
+            xAxis.granularity = 1f
+            xAxis.textColor = Color.GRAY
+
+            axisLeft.setDrawGridLines(true)
+            axisLeft.gridColor = Color.LTGRAY
+            axisLeft.textColor = Color.GRAY
+            axisRight.isEnabled = false
+
+            legend.isEnabled = true
+            legend.textColor = Color.GRAY
+            legend.verticalAlignment = Legend.LegendVerticalAlignment.TOP
+            legend.horizontalAlignment = Legend.LegendHorizontalAlignment.RIGHT
+            legend.form = Legend.LegendForm.LINE
+        }
+    }
+
     /**
      * Observe chart data and populate charts
      */
@@ -339,6 +367,7 @@ class AnalyticsFragment : BaseFragment<FragmentAnalyticsBinding>() {
                 populateOilRatioChart(chartData.oilToBunchRatioData)
                 populatePerBunchFinancialChart(chartData.perBunchFinancialData)
                 populatePerGallonFinancialChart(chartData.perGallonFinancialData)
+                populateCumulativeFinancialChart(chartData.cumulativeFinancialData)
             }
         }
     }
@@ -690,6 +719,44 @@ class AnalyticsFragment : BaseFragment<FragmentAnalyticsBinding>() {
 
         val lineData = LineData(costDataSet, incomeDataSet)
         binding.lineChartPerGallonFinancial.apply {
+            xAxis.valueFormatter = IndexAxisValueFormatter(labels)
+            this.data = lineData
+            animateX(1000)
+            invalidate()
+        }
+    }
+
+    private fun populateCumulativeFinancialChart(data: List<CumulativeFinancialPoint>) {
+        val costEntries = mutableListOf<Entry>()
+        val incomeEntries = mutableListOf<Entry>()
+        val labels = mutableListOf<String>()
+
+        data.forEachIndexed { index, point ->
+            costEntries.add(Entry(index.toFloat(), point.cumulativeCost.toFloat()))
+            incomeEntries.add(Entry(index.toFloat(), point.cumulativeIncome.toFloat()))
+            labels.add(point.label)
+        }
+
+        val costDataSet = LineDataSet(costEntries, "Cumulative Cost").apply {
+            color = Color.rgb(244, 67, 54)
+            lineWidth = 3f
+            setCircleColor(Color.rgb(244, 67, 54))
+            circleRadius = 5f
+            setDrawValues(false)
+            mode = LineDataSet.Mode.CUBIC_BEZIER
+        }
+
+        val incomeDataSet = LineDataSet(incomeEntries, "Cumulative Income").apply {
+            color = Color.rgb(76, 175, 80)
+            lineWidth = 3f
+            setCircleColor(Color.rgb(76, 175, 80))
+            circleRadius = 5f
+            setDrawValues(false)
+            mode = LineDataSet.Mode.CUBIC_BEZIER
+        }
+
+        val lineData = LineData(costDataSet, incomeDataSet)
+        binding.lineChartCumulativeFinancial.apply {
             xAxis.valueFormatter = IndexAxisValueFormatter(labels)
             this.data = lineData
             animateX(1000)

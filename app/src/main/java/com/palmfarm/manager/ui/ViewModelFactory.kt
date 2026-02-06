@@ -184,7 +184,8 @@ class ViewModelFactory(private val app: PalmFarmApp) : ViewModelProvider.Factory
                     wagePaymentDao = app.database.wagePaymentDao(),
                     advancePaymentDao = app.database.advancePaymentDao(),
                     saleDao = app.database.saleDao(),
-                    consumptionDao = app.database.consumptionDao()
+                    consumptionDao = app.database.consumptionDao(),
+                    fixedCostDao = app.database.fixedCostDao()
                 ) as T
             }
             modelClass.isAssignableFrom(CashTransactionViewModel::class.java) -> {
