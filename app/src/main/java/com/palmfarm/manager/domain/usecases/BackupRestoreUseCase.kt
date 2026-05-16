@@ -1,6 +1,7 @@
 package com.palmfarm.manager.domain.usecases
 
 import android.content.Context
+import android.net.Uri
 import android.os.Environment
 import android.util.Log
 import com.palmfarm.manager.data.database.AppDatabase
@@ -105,17 +106,12 @@ class BackupRestoreUseCase(
                 mkdirs()
             }
 
-            val extractedFiles = extractBackupArchive(backupFile, tempDir)
-            val (dbFileName, walFileName, shmFileName) = getDatabaseFileNames()
-
-            val extractedDb = File(tempDir, dbFileName)
+            extractBackupArchive(backupFile, tempDir)
+            val (extractedDb, extractedWal, extractedShm) = resolveExtractedDatabaseFiles(tempDir)
             if (!extractedDb.exists()) {
                 tempDir.deleteRecursively()
                 return@withContext Result.failure(Exception("Backup archive missing database file"))
             }
-
-            val extractedWal = File(tempDir, walFileName)
-            val extractedShm = File(tempDir, shmFileName)
 
             val (currentDb, currentWal, currentShm) = getDatabaseFiles()
 
@@ -192,6 +188,24 @@ class BackupRestoreUseCase(
                 Log.e("BackupRestore", "Failed to restore from safety backup", restoreError)
             }
 
+            Result.failure(e)
+        }
+    }
+
+    /**
+     * Restore database from backup archive selected through SAF picker.
+     */
+    suspend fun restoreDatabaseFromUri(backupUri: Uri): Result<Unit> = withContext(Dispatchers.IO) {
+        try {
+            val tempZip = File.createTempFile("restore_", ".zip", context.cacheDir)
+            context.contentResolver.openInputStream(backupUri)?.use { input ->
+                FileOutputStream(tempZip).use { output -> input.copyTo(output) }
+            } ?: return@withContext Result.failure(Exception("Unable to read selected backup file"))
+
+            val result = restoreDatabase(tempZip)
+            tempZip.delete()
+            result
+        } catch (e: Exception) {
             Result.failure(e)
         }
     }
@@ -313,6 +327,23 @@ class BackupRestoreUseCase(
             throw Exception("Failed to extract backup archive: ${e.message}", e)
         }
         return extracted
+    }
+
+    private fun resolveExtractedDatabaseFiles(tempDir: File): Triple<File, File, File> {
+        val (dbFileName, walFileName, shmFileName) = getDatabaseFileNames()
+        val exactDb = File(tempDir, dbFileName)
+        val exactWal = File(tempDir, walFileName)
+        val exactShm = File(tempDir, shmFileName)
+        if (exactDb.exists()) {
+            return Triple(exactDb, exactWal, exactShm)
+        }
+
+        val extracted = tempDir.listFiles().orEmpty().toList()
+        val dbCandidate = extracted.firstOrNull { it.isFile && !it.name.endsWith("-wal") && !it.name.endsWith("-shm") }
+            ?: File(tempDir, dbFileName)
+        val walCandidate = extracted.firstOrNull { it.isFile && it.name.endsWith("-wal") } ?: File(tempDir, walFileName)
+        val shmCandidate = extracted.firstOrNull { it.isFile && it.name.endsWith("-shm") } ?: File(tempDir, shmFileName)
+        return Triple(dbCandidate, walCandidate, shmCandidate)
     }
 
     companion object {

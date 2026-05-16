@@ -9,6 +9,7 @@ import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.Filter
 import androidx.core.widget.doAfterTextChanged
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -49,6 +50,14 @@ class SettingsFragment : BaseFragment<FragmentSettingsBinding>() {
     // Track pending backup/restore operation
     private var pendingBackupOperation = false
     private var pendingRestoreOperation = false
+    private val restoreFilePicker = registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        if (uri == null) return@registerForActivityResult
+        requireContext().contentResolver.takePersistableUriPermission(
+            uri,
+            android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
+        )
+        confirmRestoreFromUri(uri)
+    }
 
     override fun getViewBinding(inflater: LayoutInflater, container: ViewGroup?): FragmentSettingsBinding {
         return FragmentSettingsBinding.inflate(inflater, container, false)
@@ -253,8 +262,8 @@ class SettingsFragment : BaseFragment<FragmentSettingsBinding>() {
      * Setup about section
      */
     private fun setupAboutSection() {
-        binding.tvAppVersion.text = "Version 1.7"
-        binding.tvAppInfo.text = "Palm Farm Manager \nA comprehensive palm farm management app for palm oil farmers in Cameroon \nBuilt by Eng Isaac Epie"
+        binding.tvAppVersion.text = "Version 2.0"
+        binding.tvAppInfo.text = "Palm Farm Manager \nA comprehensive palm farm management app \nBuilt by Eng Isaac Epie"
     }
 
     /**
@@ -564,16 +573,8 @@ class SettingsFragment : BaseFragment<FragmentSettingsBinding>() {
      * Perform database restore
      */
     private fun performRestore() {
-        // Check if permissions are granted
-        if (!PermissionHelper.hasBackupRestorePermissions(requireContext())) {
-            // Request permissions
-            pendingRestoreOperation = true
-            showPermissionRationaleAndRequest(isBackup = false)
-            return
-        }
-
-        // Permissions granted, proceed with restore
-        executeRestore()
+        // Use SAF picker so user can restore from any folder/app source.
+        restoreFilePicker.launch(arrayOf("application/zip", "application/octet-stream", "*/*"))
     }
 
     /**
@@ -708,6 +709,42 @@ class SettingsFragment : BaseFragment<FragmentSettingsBinding>() {
                             // Exit app
                             requireActivity().finishAffinity()
                         }
+                        .setCancelable(false)
+                        .show()
+                }.onFailure { error ->
+                    hideLoading()
+                    showError("Restore failed: ${error.message}")
+                }
+            } catch (e: Exception) {
+                hideLoading()
+                showError("Restore error: ${e.message}")
+            }
+        }
+    }
+
+    private fun confirmRestoreFromUri(backupUri: android.net.Uri) {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Confirm Restore")
+            .setMessage("This will replace all current data with the selected backup file. A safety backup of current data will be created. Continue?")
+            .setPositiveButton("Restore") { _, _ ->
+                performRestoreOperationFromUri(backupUri)
+            }
+            .setNegativeButton(R.string.action_cancel, null)
+            .show()
+    }
+
+    private fun performRestoreOperationFromUri(backupUri: android.net.Uri) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                showLoading()
+                val result = viewModel.restoreDatabaseFromUri(backupUri)
+                result.onSuccess {
+                    hideLoading()
+                    showToast("Restore successful")
+                    MaterialAlertDialogBuilder(requireContext())
+                        .setTitle("Restore Complete")
+                        .setMessage("Database restored successfully. Please restart the app for changes to take effect.")
+                        .setPositiveButton("OK") { _, _ -> requireActivity().finishAffinity() }
                         .setCancelable(false)
                         .show()
                 }.onFailure { error ->

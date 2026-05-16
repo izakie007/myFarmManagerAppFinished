@@ -1,5 +1,6 @@
 package com.palmfarm.manager.ui.settings
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.palmfarm.manager.PalmFarmApp
@@ -91,6 +92,10 @@ class SettingsViewModel(
      */
     suspend fun restoreDatabase(backupFile: File): Result<Unit> {
         return backupRestoreUseCase.restoreDatabase(backupFile)
+    }
+
+    suspend fun restoreDatabaseFromUri(backupUri: Uri): Result<Unit> {
+        return backupRestoreUseCase.restoreDatabaseFromUri(backupUri)
     }
 
     /**
