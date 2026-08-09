@@ -1,6 +1,7 @@
 package com.palmfarm.manager.ui.production.adapters
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -13,7 +14,8 @@ import com.palmfarm.manager.utils.DateUtils
  * Adapter for harvest records
  */
 class HarvestAdapter(
-    private val onHarvestClick: (Harvest) -> Unit
+    private val onHarvestClick: (Harvest) -> Unit,
+    private val onHarvestMenuClick: (Harvest, View) -> Unit
 ) : ListAdapter<Harvest, HarvestAdapter.ViewHolder>(DiffCallback()) {
 
     private var workerMap: Map<Int, String> = emptyMap()
@@ -32,7 +34,7 @@ class HarvestAdapter(
             parent,
             false
         )
-        return ViewHolder(binding, onHarvestClick)
+        return ViewHolder(binding, onHarvestClick, onHarvestMenuClick)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -41,20 +43,22 @@ class HarvestAdapter(
 
     class ViewHolder(
         private val binding: ItemHarvestBinding,
-        private val onHarvestClick: (Harvest) -> Unit
+        private val onHarvestClick: (Harvest) -> Unit,
+        private val onHarvestMenuClick: (Harvest, View) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(harvest: Harvest, workerMap: Map<Int, String>) {
             binding.tvHarvestNumber.text = "Harvest #${harvest.harvestNumber}"
-            
+
             // Display worker name from map, fallback to ID if not found
             val workerName = workerMap[harvest.harvesterId] ?: "Worker #${harvest.harvesterId}"
             binding.tvHarvestWorker.text = "Worker: $workerName"
-            
+
             binding.tvHarvestDate.text = DateUtils.formatToDisplay(harvest.date)
             binding.tvHarvestBunches.text = harvest.numberOfBunches.toString()
 
             binding.root.setOnClickListener { onHarvestClick(harvest) }
+            binding.btnHarvestMenu.setOnClickListener { onHarvestMenuClick(harvest, it) }
         }
     }
 

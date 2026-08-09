@@ -58,6 +58,9 @@ interface AdvancePaymentDao {
     @Query("SELECT COALESCE(SUM(amount), 0.0) FROM advance_payments WHERE cycle_id = :cycleId")
     suspend fun getTotalAdvancesForCycle(cycleId: Int): Double
 
+    @Query("SELECT COALESCE(SUM(amount), 0.0) FROM advance_payments WHERE cycle_id = :cycleId")
+    fun getTotalAdvancesForCycleFlow(cycleId: Int): Flow<Double>
+
     @Query("SELECT COUNT(*) FROM advance_payments WHERE worker_id = :workerId AND cycle_id = :cycleId")
     suspend fun getAdvanceCountForWorkerInCycle(workerId: Int, cycleId: Int): Int
 }

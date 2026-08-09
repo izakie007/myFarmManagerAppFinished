@@ -1,6 +1,7 @@
 package com.palmfarm.manager.ui.production.adapters
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -13,7 +14,8 @@ import com.palmfarm.manager.utils.DateUtils
  * Adapter for milling records
  */
 class MillingAdapter(
-    private val onMillingClick: (Milling) -> Unit
+    private val onMillingClick: (Milling) -> Unit,
+    private val onMillingMenuClick: (Milling, View) -> Unit
 ) : ListAdapter<Milling, MillingAdapter.ViewHolder>(DiffCallback()) {
 
     private var workerMap: Map<Int, String> = emptyMap()
@@ -32,7 +34,7 @@ class MillingAdapter(
             parent,
             false
         )
-        return ViewHolder(binding, onMillingClick)
+        return ViewHolder(binding, onMillingClick, onMillingMenuClick)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -41,21 +43,23 @@ class MillingAdapter(
 
     class ViewHolder(
         private val binding: ItemMillingBinding,
-        private val onMillingClick: (Milling) -> Unit
+        private val onMillingClick: (Milling) -> Unit,
+        private val onMillingMenuClick: (Milling, View) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(milling: Milling, workerMap: Map<Int, String>) {
             binding.tvMillingDate.text = DateUtils.formatToDisplay(milling.date)
-            
+
             // Display worker name from map, fallback to ID if not found
             val workerName = workerMap[milling.millerId] ?: "Worker #${milling.millerId}"
             binding.tvMillingWorker.text = "Worker: $workerName"
-            
+
             binding.tvMillingOil.text = String.format("%.1f gal", milling.oilProducedGallons)
             binding.tvMillingBunches.text = "${milling.bunchesMilled} bunches"
             binding.tvMillingDrums.text = "${milling.drumsCooked} drums"
 
             binding.root.setOnClickListener { onMillingClick(milling) }
+            binding.btnMillingMenu.setOnClickListener { onMillingMenuClick(milling, it) }
         }
     }
 

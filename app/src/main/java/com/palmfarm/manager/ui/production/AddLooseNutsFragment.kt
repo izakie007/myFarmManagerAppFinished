@@ -7,46 +7,88 @@ import android.widget.ArrayAdapter
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.palmfarm.manager.data.database.entities.LooseNutsPicking
 import com.palmfarm.manager.databinding.FragmentAddLooseNutsBinding
 import com.palmfarm.manager.ui.ViewModelFactory
 import com.palmfarm.manager.ui.common.BaseFragment
 import com.palmfarm.manager.utils.DateUtils
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
 /**
- * Fragment for adding a loose nuts picking record
+ * Fragment for adding or editing a loose nuts picking record
  */
 class AddLooseNutsFragment : BaseFragment<FragmentAddLooseNutsBinding>() {
 
     private val viewModel: ProductionViewModel by viewModels { ViewModelFactory.create() }
+    private val args: AddLooseNutsFragmentArgs by navArgs()
 
     private var pickingDateMillis: Long = System.currentTimeMillis()
+    private var looseNutsId: Int = 0
+    private var existingLooseNuts: LooseNutsPicking? = null
+    private var workerIdToSelect: Int? = null
 
     override fun getViewBinding(inflater: LayoutInflater, container: ViewGroup?): FragmentAddLooseNutsBinding {
         return FragmentAddLooseNutsBinding.inflate(inflater, container, false)
     }
 
     override fun setupViews() {
+        looseNutsId = args.looseNutsId
         setupDatePicker()
         setupSaveButton()
+
+        if (looseNutsId > 0) {
+            loadLooseNuts(looseNutsId)
+        }
     }
 
     override fun setupObservers() {
-        // Observe workers for dropdown
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.activeWorkers.collect { workers ->
                 val workerNames = workers.map { it.fullName }
                 val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, workerNames)
                 binding.actvWorker.setAdapter(adapter)
+
+                workerIdToSelect?.let { workerId ->
+                    val worker = workers.find { it.id == workerId }
+                    worker?.let {
+                        binding.actvWorker.setText(it.fullName, false)
+                        workerIdToSelect = null
+                    }
+                }
             }
         }
     }
 
-    /**
-     * Setup date picker
-     */
+    private fun loadLooseNuts(id: Int) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            val looseNuts = viewModel.getLooseNutsById(id).first()
+            if (looseNuts == null) {
+                showError("Loose nuts record not found")
+                findNavController().navigateUp()
+                return@launch
+            }
+
+            existingLooseNuts = looseNuts
+            pickingDateMillis = looseNuts.date
+            workerIdToSelect = looseNuts.pickerId
+
+            binding.etLooseNutsDate.setText(DateUtils.formatToDisplay(pickingDateMillis))
+            binding.etNumberOfBags.setText(
+                if (looseNuts.numberOfBags % 1.0 == 0.0) {
+                    looseNuts.numberOfBags.toInt().toString()
+                } else {
+                    looseNuts.numberOfBags.toString()
+                }
+            )
+
+            val worker = viewModel.activeWorkers.value.find { it.id == looseNuts.pickerId }
+            worker?.let { binding.actvWorker.setText(it.fullName, false) }
+        }
+    }
+
     private fun setupDatePicker() {
         binding.etLooseNutsDate.setText(DateUtils.formatToDisplay(pickingDateMillis))
 
@@ -63,7 +105,6 @@ class AddLooseNutsFragment : BaseFragment<FragmentAddLooseNutsBinding>() {
                         set(Calendar.MILLISECOND, 0)
                     }
 
-                    // Cannot be future date
                     if (selectedCalendar.timeInMillis > System.currentTimeMillis()) {
                         showError("Date cannot be in the future")
                         return@DatePickerDialog
@@ -79,23 +120,16 @@ class AddLooseNutsFragment : BaseFragment<FragmentAddLooseNutsBinding>() {
         }
     }
 
-    /**
-     * Setup save button
-     */
     private fun setupSaveButton() {
         binding.btnSave.setOnClickListener {
             saveLooseNuts()
         }
     }
 
-    /**
-     * Save loose nuts record
-     */
     private fun saveLooseNuts() {
         val workerName = binding.actvWorker.text.toString()
         val numberOfBags = binding.etNumberOfBags.text.toString().toIntOrNull() ?: 0
 
-        // Validation
         if (workerName.isEmpty()) {
             showError("Worker is required")
             return
@@ -106,29 +140,35 @@ class AddLooseNutsFragment : BaseFragment<FragmentAddLooseNutsBinding>() {
             return
         }
 
-        // Find worker ID
         val workerId = viewModel.activeWorkers.value.find { it.fullName == workerName }?.id ?: 0
         if (workerId == 0) {
             showError("Invalid worker selected")
             return
         }
 
-        // Get current cycle ID
-        val cycleId = viewModel.getCurrentCycleId()
+        if (looseNutsId > 0) {
+            val existing = existingLooseNuts ?: return
+            val looseNuts = existing.copy(
+                pickerId = workerId,
+                date = pickingDateMillis,
+                numberOfBags = numberOfBags.toDouble(),
+                updatedAt = System.currentTimeMillis()
+            )
+            viewModel.updateLooseNuts(looseNuts)
+        } else {
+            val cycleId = viewModel.getCurrentCycleId()
+            val looseNuts = LooseNutsPicking(
+                id = 0,
+                cycleId = cycleId,
+                pickerId = workerId,
+                date = pickingDateMillis,
+                numberOfBags = numberOfBags.toDouble(),
+                createdAt = System.currentTimeMillis(),
+                updatedAt = System.currentTimeMillis()
+            )
+            viewModel.addLooseNuts(looseNuts)
+        }
 
-        val looseNuts = LooseNutsPicking(
-            id = 0,
-            cycleId = cycleId,
-            pickerId = workerId,
-            date = pickingDateMillis,
-            numberOfBags = numberOfBags.toDouble(),
-            createdAt = System.currentTimeMillis(),
-            updatedAt = System.currentTimeMillis()
-        )
-
-        viewModel.addLooseNuts(looseNuts)
-
-        // Navigate back
         findNavController().navigateUp()
     }
 }

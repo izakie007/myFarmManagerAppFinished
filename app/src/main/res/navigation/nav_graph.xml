@@ -46,17 +46,32 @@
     <fragment
         android:id="@+id/addHarvestFragment"
         android:name="com.palmfarm.manager.ui.production.AddHarvestFragment"
-        android:label="@string/add_harvest" />
+        android:label="@string/add_harvest">
+        <argument
+            android:name="harvestId"
+            android:defaultValue="0"
+            app:argType="integer" />
+    </fragment>
 
     <fragment
         android:id="@+id/addMillingFragment"
         android:name="com.palmfarm.manager.ui.production.AddMillingFragment"
-        android:label="@string/add_milling" />
+        android:label="@string/add_milling">
+        <argument
+            android:name="millingId"
+            android:defaultValue="0"
+            app:argType="integer" />
+    </fragment>
 
     <fragment
         android:id="@+id/addLooseNutsFragment"
         android:name="com.palmfarm.manager.ui.production.AddLooseNutsFragment"
-        android:label="@string/add_loose_nuts" />
+        android:label="@string/add_loose_nuts">
+        <argument
+            android:name="looseNutsId"
+            android:defaultValue="0"
+            app:argType="integer" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_finances"

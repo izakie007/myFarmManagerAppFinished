@@ -77,6 +77,49 @@ class PdfGenerator(private val context: Context) {
     }
 
     /**
+     * Paint that renders negative amounts in red
+     */
+    private fun signedAmountPaint(basePaint: Paint, amount: Double): Paint {
+        return Paint(basePaint).apply {
+            if (amount < 0) {
+                color = android.graphics.Color.RED
+            }
+        }
+    }
+
+    /**
+     * Draw a currency amount, using red for negative values
+     */
+    private fun drawAmount(
+        canvas: android.graphics.Canvas,
+        amount: Double,
+        x: Float,
+        y: Float,
+        paint: Paint
+    ) {
+        canvas.drawText(
+            CurrencyUtils.formatAmount(amount),
+            x,
+            y,
+            signedAmountPaint(paint, amount)
+        )
+    }
+
+    /**
+     * Draw text that represents a signed numeric value, using red when negative
+     */
+    private fun drawSignedText(
+        canvas: android.graphics.Canvas,
+        text: String,
+        value: Double,
+        x: Float,
+        y: Float,
+        paint: Paint
+    ) {
+        canvas.drawText(text, x, y, signedAmountPaint(paint, value))
+    }
+
+    /**
      * Generate worker payslip PDF
      */
     fun generatePayslip(
@@ -579,11 +622,11 @@ class PdfGenerator(private val context: Context) {
 
             val totalIncome = cashFlowData.totalIncome
             canvas.drawText("Sales & Consumption", MARGIN.toFloat() + 20, yPosition, normalPaint)
-            canvas.drawText(CurrencyUtils.formatAmount(totalIncome), PAGE_WIDTH - MARGIN - 150f, yPosition, normalPaint)
+            drawAmount(canvas, totalIncome, PAGE_WIDTH - MARGIN - 150f, yPosition, normalPaint)
             yPosition += LINE_HEIGHT.toFloat()
 
             canvas.drawText("Total Inflows:", MARGIN.toFloat(), yPosition, headerPaint)
-            canvas.drawText(CurrencyUtils.formatAmount(totalIncome), PAGE_WIDTH - MARGIN - 150f, yPosition, headerPaint)
+            drawAmount(canvas, totalIncome, PAGE_WIDTH - MARGIN - 150f, yPosition, headerPaint)
             yPosition += LINE_HEIGHT * 2f
 
             // Cash Outflows
@@ -592,21 +635,17 @@ class PdfGenerator(private val context: Context) {
 
             val totalExpenses = cashFlowData.totalExpenses
             canvas.drawText("Total Expenses", MARGIN.toFloat() + 20, yPosition, normalPaint)
-            canvas.drawText(CurrencyUtils.formatAmount(totalExpenses), PAGE_WIDTH - MARGIN - 150f, yPosition, normalPaint)
+            drawAmount(canvas, totalExpenses, PAGE_WIDTH - MARGIN - 150f, yPosition, normalPaint)
             yPosition += LINE_HEIGHT.toFloat()
 
             canvas.drawText("Total Outflows:", MARGIN.toFloat(), yPosition, headerPaint)
-            canvas.drawText(CurrencyUtils.formatAmount(totalExpenses), PAGE_WIDTH - MARGIN - 150f, yPosition, headerPaint)
+            drawAmount(canvas, totalExpenses, PAGE_WIDTH - MARGIN - 150f, yPosition, headerPaint)
             yPosition += LINE_HEIGHT * 2f
 
             // Net Cash Flow
             val netCashFlow = cashFlowData.netCashFlow
-            val cashFlowPaint = Paint(headerPaint).apply {
-                color = if (netCashFlow >= 0) android.graphics.Color.BLACK
-                else android.graphics.Color.RED
-            }
             canvas.drawText("Net Cash Flow:", MARGIN.toFloat(), yPosition, headerPaint)
-            canvas.drawText(CurrencyUtils.formatAmount(netCashFlow), PAGE_WIDTH - MARGIN - 150f, yPosition, cashFlowPaint)
+            drawAmount(canvas, netCashFlow, PAGE_WIDTH - MARGIN - 150f, yPosition, headerPaint)
 
             pdfDocument.finishPage(page)
 
@@ -625,15 +664,15 @@ class PdfGenerator(private val context: Context) {
             yPosition += LINE_HEIGHT.toFloat()
 
             canvas.drawText("Sales", MARGIN.toFloat() + 20, yPosition, normalPaint)
-            canvas.drawText(CurrencyUtils.formatAmount(profitabilityData.salesIncome), PAGE_WIDTH - MARGIN - 150f, yPosition, normalPaint)
+            drawAmount(canvas, profitabilityData.salesIncome, PAGE_WIDTH - MARGIN - 150f, yPosition, normalPaint)
             yPosition += LINE_HEIGHT.toFloat()
 
             canvas.drawText("Consumption", MARGIN.toFloat() + 20, yPosition, normalPaint)
-            canvas.drawText(CurrencyUtils.formatAmount(profitabilityData.consumptionIncome), PAGE_WIDTH - MARGIN - 150f, yPosition, normalPaint)
+            drawAmount(canvas, profitabilityData.consumptionIncome, PAGE_WIDTH - MARGIN - 150f, yPosition, normalPaint)
             yPosition += LINE_HEIGHT.toFloat()
 
             canvas.drawText("Total Revenue:", MARGIN.toFloat(), yPosition, headerPaint)
-            canvas.drawText(CurrencyUtils.formatAmount(profitabilityData.totalIncome), PAGE_WIDTH - MARGIN - 150f, yPosition, headerPaint)
+            drawAmount(canvas, profitabilityData.totalIncome, PAGE_WIDTH - MARGIN - 150f, yPosition, headerPaint)
             yPosition += LINE_HEIGHT * 2f
 
             // Costs
@@ -642,17 +681,17 @@ class PdfGenerator(private val context: Context) {
 
             profitabilityData.expensesBreakdown.forEach { (category, amount) ->
                 canvas.drawText(category, MARGIN.toFloat() + 20, yPosition, normalPaint)
-                canvas.drawText(CurrencyUtils.formatAmount(amount), PAGE_WIDTH - MARGIN - 150f, yPosition, normalPaint)
+                drawAmount(canvas, amount, PAGE_WIDTH - MARGIN - 150f, yPosition, normalPaint)
                 yPosition += LINE_HEIGHT.toFloat()
             }
 
             canvas.drawText("Depreciation", MARGIN.toFloat() + 20, yPosition, normalPaint)
-            canvas.drawText(CurrencyUtils.formatAmount(profitabilityData.totalDepreciation), PAGE_WIDTH - MARGIN - 150f, yPosition, normalPaint)
+            drawAmount(canvas, profitabilityData.totalDepreciation, PAGE_WIDTH - MARGIN - 150f, yPosition, normalPaint)
             yPosition += LINE_HEIGHT.toFloat()
 
             val totalCosts = profitabilityData.operationalExpenses + profitabilityData.totalDepreciation
             canvas.drawText("Total Costs:", MARGIN.toFloat(), yPosition, headerPaint)
-            canvas.drawText(CurrencyUtils.formatAmount(totalCosts), PAGE_WIDTH - MARGIN - 150f, yPosition, headerPaint)
+            drawAmount(canvas, totalCosts, PAGE_WIDTH - MARGIN - 150f, yPosition, headerPaint)
             yPosition += LINE_HEIGHT * 2f
 
             // Net Profit
@@ -662,10 +701,17 @@ class PdfGenerator(private val context: Context) {
                 else android.graphics.Color.RED
             }
             canvas.drawText("Net Profit:", MARGIN.toFloat(), yPosition, profitPaint)
-            canvas.drawText(CurrencyUtils.formatAmount(netProfit), PAGE_WIDTH - MARGIN - 150f, yPosition, profitPaint)
+            drawAmount(canvas, netProfit, PAGE_WIDTH - MARGIN - 150f, yPosition, profitPaint)
             yPosition += LINE_HEIGHT * 1.5f
 
-            canvas.drawText("Profit Margin: ${String.format("%.1f%%", profitabilityData.netMarginPercent)}", MARGIN.toFloat(), yPosition, normalPaint)
+            drawSignedText(
+                canvas,
+                "Profit Margin: ${String.format("%.1f%%", profitabilityData.netMarginPercent)}",
+                profitabilityData.netMarginPercent,
+                MARGIN.toFloat(),
+                yPosition,
+                normalPaint
+            )
 
             pdfDocument.finishPage(page)
 
@@ -688,16 +734,16 @@ class PdfGenerator(private val context: Context) {
 
             balanceSheetData.currentAssets.forEach { (asset, amount) ->
                 canvas.drawText(asset, MARGIN.toFloat() + 20, yPosition, normalPaint)
-                canvas.drawText(CurrencyUtils.formatAmount(amount), PAGE_WIDTH - MARGIN - 150f, yPosition, normalPaint)
+                drawAmount(canvas, amount, PAGE_WIDTH - MARGIN - 150f, yPosition, normalPaint)
                 yPosition += LINE_HEIGHT.toFloat()
             }
 
             canvas.drawText("Fixed Assets", MARGIN.toFloat() + 20, yPosition, normalPaint)
-            canvas.drawText(CurrencyUtils.formatAmount(balanceSheetData.fixedAssets), PAGE_WIDTH - MARGIN - 150f, yPosition, normalPaint)
+            drawAmount(canvas, balanceSheetData.fixedAssets, PAGE_WIDTH - MARGIN - 150f, yPosition, normalPaint)
             yPosition += LINE_HEIGHT.toFloat()
 
             canvas.drawText("Total Assets:", MARGIN.toFloat(), yPosition, headerPaint)
-            canvas.drawText(CurrencyUtils.formatAmount(balanceSheetData.totalAssets), PAGE_WIDTH - MARGIN - 150f, yPosition, headerPaint)
+            drawAmount(canvas, balanceSheetData.totalAssets, PAGE_WIDTH - MARGIN - 150f, yPosition, headerPaint)
             yPosition += LINE_HEIGHT * 2f
 
             // Liabilities
@@ -705,20 +751,20 @@ class PdfGenerator(private val context: Context) {
             yPosition += LINE_HEIGHT.toFloat()
 
             canvas.drawText("Loans Payable", MARGIN.toFloat() + 20, yPosition, normalPaint)
-            canvas.drawText(CurrencyUtils.formatAmount(balanceSheetData.loansPayable), PAGE_WIDTH - MARGIN - 150f, yPosition, normalPaint)
+            drawAmount(canvas, balanceSheetData.loansPayable, PAGE_WIDTH - MARGIN - 150f, yPosition, normalPaint)
             yPosition += LINE_HEIGHT.toFloat()
 
             canvas.drawText("Wages Payable", MARGIN.toFloat() + 20, yPosition, normalPaint)
-            canvas.drawText(CurrencyUtils.formatAmount(balanceSheetData.wagesPayable), PAGE_WIDTH - MARGIN - 150f, yPosition, normalPaint)
+            drawAmount(canvas, balanceSheetData.wagesPayable, PAGE_WIDTH - MARGIN - 150f, yPosition, normalPaint)
             yPosition += LINE_HEIGHT.toFloat()
 
             canvas.drawText("Total Liabilities:", MARGIN.toFloat(), yPosition, headerPaint)
-            canvas.drawText(CurrencyUtils.formatAmount(balanceSheetData.totalLiabilities), PAGE_WIDTH - MARGIN - 150f, yPosition, headerPaint)
+            drawAmount(canvas, balanceSheetData.totalLiabilities, PAGE_WIDTH - MARGIN - 150f, yPosition, headerPaint)
             yPosition += LINE_HEIGHT * 2f
 
             // Equity
             canvas.drawText("Net Worth (Equity):", MARGIN.toFloat(), yPosition, headerPaint)
-            canvas.drawText(CurrencyUtils.formatAmount(balanceSheetData.netWorth), PAGE_WIDTH - MARGIN - 150f, yPosition, headerPaint)
+            drawAmount(canvas, balanceSheetData.netWorth, PAGE_WIDTH - MARGIN - 150f, yPosition, headerPaint)
 
             // Footer
             yPosition = PAGE_HEIGHT - MARGIN.toFloat() - LINE_HEIGHT * 2

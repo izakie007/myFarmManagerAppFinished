@@ -8,66 +8,84 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.palmfarm.manager.R
 import com.palmfarm.manager.data.database.entities.Milling
 import com.palmfarm.manager.databinding.FragmentAddMillingBinding
 import com.palmfarm.manager.ui.ViewModelFactory
 import com.palmfarm.manager.ui.common.BaseFragment
 import com.palmfarm.manager.utils.DateUtils
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
 /**
- * Fragment for adding a milling record
+ * Fragment for adding or editing a milling record
  */
 class AddMillingFragment : BaseFragment<FragmentAddMillingBinding>() {
 
     private val viewModel: ProductionViewModel by viewModels { ViewModelFactory.create() }
+    private val args: AddMillingFragmentArgs by navArgs()
 
     private var millingDateMillis: Long = System.currentTimeMillis()
     private var oilUnit: OilUnit = OilUnit.GALLONS
-    private var bunchesAvailable: Int? = 0
+    private var bunchesAvailable: Int = 0
+    private var millingId: Int = 0
+    private var existingMilling: Milling? = null
+    private var workerIdToSelect: Int? = null
+    private var navigateOnSuccess: Boolean = false
 
     override fun getViewBinding(inflater: LayoutInflater, container: ViewGroup?): FragmentAddMillingBinding {
         return FragmentAddMillingBinding.inflate(inflater, container, false)
     }
 
     override fun setupViews() {
+        millingId = args.millingId
         setupDatePicker()
         setupOilUnitToggle()
         setupBunchesValidation()
         setupSaveButton()
+
+        if (millingId > 0) {
+            loadMilling(millingId)
+        }
     }
 
     override fun setupObservers() {
-        // Observe workers for dropdown
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.activeWorkers.collect { workers ->
                 val workerNames = workers.map { it.fullName }
                 val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, workerNames)
                 binding.actvWorker.setAdapter(adapter)
+
+                workerIdToSelect?.let { workerId ->
+                    val worker = workers.find { it.id == workerId }
+                    worker?.let {
+                        binding.actvWorker.setText(it.fullName, false)
+                        workerIdToSelect = null
+                    }
+                }
             }
         }
 
-        // Observe bunches available
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.productionMetrics.collect { metrics ->
-                bunchesAvailable = metrics.bunchesAvailable
+                val originalBunches = existingMilling?.bunchesMilled ?: 0
+                bunchesAvailable = metrics.bunchesAvailable + originalBunches
                 binding.tvBunchesAvailable.text = getString(R.string.milling_bunches_available, bunchesAvailable)
             }
         }
 
-        // Observe success messages
         viewModel.success.observe(viewLifecycleOwner) { message ->
             message?.let {
                 showToast(it)
                 viewModel.clearSuccess()
-                // Navigate back only on success
-                findNavController().navigateUp()
+                if (navigateOnSuccess) {
+                    findNavController().navigateUp()
+                }
             }
         }
 
-        // Observe error messages
         viewModel.error.observe(viewLifecycleOwner) { message ->
             message?.let {
                 showError(it)
@@ -75,15 +93,36 @@ class AddMillingFragment : BaseFragment<FragmentAddMillingBinding>() {
             }
         }
 
-        // Observe loading state
         viewModel.loading.observe(viewLifecycleOwner) { isLoading ->
             binding.btnSave.isEnabled = !isLoading
         }
     }
 
-    /**
-     * Setup date picker
-     */
+    private fun loadMilling(id: Int) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            val milling = viewModel.getMillingById(id).first()
+            if (milling == null) {
+                showError("Milling record not found")
+                findNavController().navigateUp()
+                return@launch
+            }
+
+            existingMilling = milling
+            millingDateMillis = milling.date
+            workerIdToSelect = milling.millerId
+
+            binding.etMillingDate.setText(DateUtils.formatToDisplay(millingDateMillis))
+            binding.etBunchesMilled.setText(milling.bunchesMilled.toString())
+            binding.etDrumsCooked.setText(milling.drumsCooked.toString())
+            binding.etOilProduced.setText(milling.oilProducedGallons.toString())
+            binding.toggleOilUnit.check(R.id.btnGallons)
+            oilUnit = OilUnit.GALLONS
+
+            val worker = viewModel.activeWorkers.value.find { it.id == milling.millerId }
+            worker?.let { binding.actvWorker.setText(it.fullName, false) }
+        }
+    }
+
     private fun setupDatePicker() {
         binding.etMillingDate.setText(DateUtils.formatToDisplay(millingDateMillis))
 
@@ -100,7 +139,6 @@ class AddMillingFragment : BaseFragment<FragmentAddMillingBinding>() {
                         set(Calendar.MILLISECOND, 0)
                     }
 
-                    // Cannot be future date
                     if (selectedCalendar.timeInMillis > System.currentTimeMillis()) {
                         showError("Milling date cannot be in the future")
                         return@DatePickerDialog
@@ -116,9 +154,6 @@ class AddMillingFragment : BaseFragment<FragmentAddMillingBinding>() {
         }
     }
 
-    /**
-     * Setup oil unit toggle
-     */
     private fun setupOilUnitToggle() {
         binding.toggleOilUnit.addOnButtonCheckedListener { _, checkedId, isChecked ->
             if (isChecked) {
@@ -131,13 +166,10 @@ class AddMillingFragment : BaseFragment<FragmentAddMillingBinding>() {
         }
     }
 
-    /**
-     * Setup bunches validation
-     */
     private fun setupBunchesValidation() {
         binding.etBunchesMilled.doAfterTextChanged {
             val bunches = it.toString().toIntOrNull() ?: 0
-            if (bunches > bunchesAvailable!!) {
+            if (bunches > bunchesAvailable) {
                 binding.tilBunchesMilled.error = "Cannot exceed $bunchesAvailable available bunches"
             } else {
                 binding.tilBunchesMilled.error = null
@@ -145,25 +177,18 @@ class AddMillingFragment : BaseFragment<FragmentAddMillingBinding>() {
         }
     }
 
-    /**
-     * Setup save button
-     */
     private fun setupSaveButton() {
         binding.btnSave.setOnClickListener {
             saveMilling()
         }
     }
 
-    /**
-     * Save milling
-     */
     private fun saveMilling() {
         val workerName = binding.actvWorker.text.toString()
         val bunchesMilled = binding.etBunchesMilled.text.toString().toIntOrNull() ?: 0
         val drumsCooked = binding.etDrumsCooked.text.toString().toDoubleOrNull() ?: 0.0
         val oilProduced = binding.etOilProduced.text.toString().toDoubleOrNull() ?: 0.0
 
-        // Validation
         if (workerName.isEmpty()) {
             showError("Worker is required")
             return
@@ -174,7 +199,7 @@ class AddMillingFragment : BaseFragment<FragmentAddMillingBinding>() {
             return
         }
 
-        if (bunchesMilled > bunchesAvailable!!) {
+        if (bunchesMilled > bunchesAvailable) {
             showError("Cannot mill $bunchesMilled bunches. Only $bunchesAvailable available.")
             return
         }
@@ -189,41 +214,52 @@ class AddMillingFragment : BaseFragment<FragmentAddMillingBinding>() {
             return
         }
 
-        // Find worker ID
         val workerId = viewModel.activeWorkers.value.find { it.fullName == workerName }?.id ?: 0
         if (workerId == 0) {
             showError("Invalid worker selected")
             return
         }
 
-        // Convert to gallons if needed
         val oilInGallons = if (oilUnit == OilUnit.LITRES) {
-            oilProduced / 20.0 // 20 litres = 1 gallon
+            oilProduced / 20.0
         } else {
             oilProduced
         }
 
-        // Get current cycle ID
-        val cycleId = viewModel.getCurrentCycleId()
-        if (cycleId <= 0) {
-            showError("No active production cycle. Configure season start month first.")
-            return
+        navigateOnSuccess = true
+
+        if (millingId > 0) {
+            val existing = existingMilling ?: return
+            val milling = existing.copy(
+                millerId = workerId,
+                date = millingDateMillis,
+                bunchesMilled = bunchesMilled,
+                drumsCooked = drumsCooked,
+                oilProducedGallons = oilInGallons,
+                updatedAt = System.currentTimeMillis()
+            )
+            viewModel.updateMilling(milling)
+        } else {
+            val cycleId = viewModel.getCurrentCycleId()
+            if (cycleId <= 0) {
+                showError("No active production cycle. Configure season start month first.")
+                navigateOnSuccess = false
+                return
+            }
+
+            val milling = Milling(
+                id = 0,
+                cycleId = cycleId,
+                millerId = workerId,
+                date = millingDateMillis,
+                bunchesMilled = bunchesMilled,
+                drumsCooked = drumsCooked,
+                oilProducedGallons = oilInGallons,
+                createdAt = System.currentTimeMillis(),
+                updatedAt = System.currentTimeMillis()
+            )
+            viewModel.addMilling(milling)
         }
-
-        val milling = Milling(
-            id = 0,
-            cycleId = cycleId,
-            millerId = workerId,
-            date = millingDateMillis,
-            bunchesMilled = bunchesMilled,
-            drumsCooked = drumsCooked,
-            oilProducedGallons = oilInGallons,
-            createdAt = System.currentTimeMillis(),
-            updatedAt = System.currentTimeMillis()
-        )
-
-        // Save milling - navigation will happen on success via observer
-        viewModel.addMilling(milling)
     }
 
     enum class OilUnit {

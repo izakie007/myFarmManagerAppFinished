@@ -34,37 +34,39 @@ class AnalyticsViewModel(
         farmDao.getTotalPalmsFlow()
     ) { currentCycle, allHarvests, allMillings, totalPalms ->
 
-        // Current cycle data
         val currentCycleId = currentCycle?.id ?: 0
-        val currentHarvests = allHarvests.filter { it.cycleId == currentCycleId }
-        val currentMillings = allMillings.filter { it.cycleId == currentCycleId }
+        val currentHarvests = allHarvests
+            .filter { it.cycleId == currentCycleId }
+            .sortedBy { it.date }
+        val currentMillings = allMillings
+            .filter { it.cycleId == currentCycleId }
+            .sortedBy { it.date }
 
-        val currentTotalBunches = currentHarvests.sumOf { it.numberOfBunches }
-        val currentBunchesMilled = currentMillings.sumOf { it.bunchesMilled }
-        val currentOilProduced = currentMillings.sumOf { it.oilProducedGallons }
+        val cycleTotalBunches = currentHarvests.sumOf { it.numberOfBunches }
+        val cycleBunchesMilled = currentMillings.sumOf { it.bunchesMilled }
+        val cycleOilProduced = currentMillings.sumOf { it.oilProducedGallons }
 
-        val currentBunchesPerTree = if (totalPalms > 0) {
-            currentTotalBunches.toDouble() / totalPalms.toDouble()
-        } else 0.0
-
-        val currentOilPerBunch = if (currentBunchesMilled > 0) {
-            currentOilProduced * 20 / currentBunchesMilled.toDouble()
-        } else 0.0
-
-        // All-time averages
-        val allTimeTotalBunches = allHarvests.sumOf { it.numberOfBunches }
-        val allTimeBunchesMilled = allMillings.sumOf { it.bunchesMilled }
-        val allTimeOilProduced = allMillings.sumOf { it.oilProducedGallons }
-
+        // All-Time = average for the entire (current) production cycle
         val allTimeBunchesPerTree = if (totalPalms > 0) {
-            allTimeTotalBunches.toDouble() / totalPalms.toDouble()
+            cycleTotalBunches.toDouble() / totalPalms.toDouble()
         } else 0.0
 
-        val allTimeOilPerBunch = if (allTimeBunchesMilled > 0) {
-            allTimeOilProduced * 20 / allTimeBunchesMilled.toDouble()
+        val allTimeOilPerBunch = if (cycleBunchesMilled > 0) {
+            cycleOilProduced * 20 / cycleBunchesMilled.toDouble()
         } else 0.0
 
-        // Calculate percentage changes
+        // Current = last recorded value in the cycle
+        val lastHarvest = currentHarvests.lastOrNull()
+        val currentBunchesPerTree = if (totalPalms > 0 && lastHarvest != null) {
+            lastHarvest.numberOfBunches.toDouble() / totalPalms.toDouble()
+        } else 0.0
+
+        val lastMilling = currentMillings.lastOrNull()
+        val currentOilPerBunch = if (lastMilling != null && lastMilling.bunchesMilled > 0) {
+            lastMilling.oilProducedGallons * 20 / lastMilling.bunchesMilled.toDouble()
+        } else 0.0
+
+        // Percentage change = difference between current (last) and all-time (cycle average)
         val bunchesPerTreeChange = calculatePercentageChange(
             allTimeBunchesPerTree,
             currentBunchesPerTree

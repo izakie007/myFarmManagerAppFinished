@@ -31,7 +31,10 @@ class ViewModelFactory(private val app: PalmFarmApp) : ViewModelProvider.Factory
             productionCycleDao = app.database.productionCycleDao(),
             harvestDao = app.database.harvestDao(),
             expenseDao = app.database.expenseDao(),
-            saleDao = app.database.saleDao()
+            saleDao = app.database.saleDao(),
+            wagePaymentDao = app.database.wagePaymentDao(),
+            advancePaymentDao = app.database.advancePaymentDao(),
+            loanDao = app.database.loanDao()
         )
     }
 

@@ -1,6 +1,7 @@
 package com.palmfarm.manager.ui.production.adapters
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -13,7 +14,8 @@ import com.palmfarm.manager.utils.DateUtils
  * Adapter for loose nuts records
  */
 class LooseNutsAdapter(
-    private val onLooseNutsClick: (LooseNutsPicking) -> Unit
+    private val onLooseNutsClick: (LooseNutsPicking) -> Unit,
+    private val onLooseNutsMenuClick: (LooseNutsPicking, View) -> Unit
 ) : ListAdapter<LooseNutsPicking, LooseNutsAdapter.ViewHolder>(DiffCallback()) {
 
     private var workerMap: Map<Int, String> = emptyMap()
@@ -32,7 +34,7 @@ class LooseNutsAdapter(
             parent,
             false
         )
-        return ViewHolder(binding, onLooseNutsClick)
+        return ViewHolder(binding, onLooseNutsClick, onLooseNutsMenuClick)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -41,18 +43,20 @@ class LooseNutsAdapter(
 
     class ViewHolder(
         private val binding: ItemLooseNutsBinding,
-        private val onLooseNutsClick: (LooseNutsPicking) -> Unit
+        private val onLooseNutsClick: (LooseNutsPicking) -> Unit,
+        private val onLooseNutsMenuClick: (LooseNutsPicking, View) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(looseNuts: LooseNutsPicking, workerMap: Map<Int, String>) {
             // Display worker name from map, fallback to ID if not found
             val workerName = workerMap[looseNuts.pickerId] ?: "Worker #${looseNuts.pickerId}"
             binding.tvLooseNutsWorker.text = "Worker: $workerName"
-            
+
             binding.tvLooseNutsDate.text = DateUtils.formatToDisplay(looseNuts.date)
             binding.tvLooseNutsBags.text = "${looseNuts.numberOfBags} bags"
 
             binding.root.setOnClickListener { onLooseNutsClick(looseNuts) }
+            binding.btnLooseNutsMenu.setOnClickListener { onLooseNutsMenuClick(looseNuts, it) }
         }
     }
 

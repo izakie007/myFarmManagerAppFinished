@@ -234,6 +234,15 @@ class ProductionViewModel(
                         return@executeWithLoading
                     }
 
+                    val existing = productionRepository.getMillingById(milling.id).first()
+                    val cycleId = milling.cycleId
+                    val bunchesAvailable = productionRepository.calculateBunchesAvailable(cycleId)
+                    val effectiveAvailable = bunchesAvailable + (existing?.bunchesMilled ?: 0)
+                    if (milling.bunchesMilled > effectiveAvailable) {
+                        showError("Cannot mill ${milling.bunchesMilled} bunches. Only $effectiveAvailable available.")
+                        return@executeWithLoading
+                    }
+
                     productionRepository.updateMilling(milling)
                     showSuccess("Milling updated successfully")
                 } catch (e: Exception) {
@@ -379,6 +388,18 @@ class ProductionViewModel(
      */
     fun getCurrentCycleId(): Int {
         return currentCycleIdFlow.value
+    }
+
+    fun getHarvestById(harvestId: Int): Flow<Harvest?> {
+        return productionRepository.getHarvestById(harvestId)
+    }
+
+    fun getMillingById(millingId: Int): Flow<Milling?> {
+        return productionRepository.getMillingById(millingId)
+    }
+
+    fun getLooseNutsById(looseNutsId: Int): Flow<LooseNutsPicking?> {
+        return productionRepository.getLooseNutsById(looseNutsId)
     }
 }
 

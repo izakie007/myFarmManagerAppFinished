@@ -3,6 +3,7 @@ package com.palmfarm.manager.data.repository
 import com.palmfarm.manager.data.database.dao.*
 import com.palmfarm.manager.data.database.entities.ProductionCycle
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
@@ -13,7 +14,10 @@ class ProductionCycleRepository(
     private val productionCycleDao: ProductionCycleDao,
     private val harvestDao: HarvestDao,
     private val expenseDao: ExpenseDao,
-    private val saleDao: SaleDao
+    private val saleDao: SaleDao,
+    private val wagePaymentDao: WagePaymentDao,
+    private val advancePaymentDao: AdvancePaymentDao,
+    private val loanDao: LoanDao
 ) {
 
     /**
@@ -85,14 +89,28 @@ class ProductionCycleRepository(
     }
 
     /**
-     * Calculate total expenses for a cycle
+     * Calculate operational expenses for a cycle
+     * (expenses + wages/net payments + advances + loan payments)
      */
     suspend fun getCycleExpenses(cycleId: Int): Double {
-        return expenseDao.getTotalExpensesByCycle(cycleId).first()
+        val expenses = expenseDao.getTotalExpensesByCycle(cycleId).first()
+        val wages = wagePaymentDao.getTotalWagesPaidForCycle(cycleId)
+        val advances = advancePaymentDao.getTotalAdvancesForCycle(cycleId)
+        val loanPayments = loanDao.getActiveLoans().first()
+            .sumOf { it.monthlyPayment * it.numberOfPaymentsMade }
+        return expenses + wages + advances + loanPayments
     }
 
     fun getCycleExpensesFlow(cycleId: Int): Flow<Double> {
-        return expenseDao.getTotalExpensesByCycle(cycleId)
+        return combine(
+            expenseDao.getTotalExpensesByCycle(cycleId),
+            wagePaymentDao.getTotalWagesPaidForCycleFlow(cycleId),
+            advancePaymentDao.getTotalAdvancesForCycleFlow(cycleId),
+            loanDao.getActiveLoans()
+        ) { expenses, wages, advances, loans ->
+            val loanPayments = loans.sumOf { it.monthlyPayment * it.numberOfPaymentsMade }
+            expenses + wages + advances + loanPayments
+        }
     }
 
     /**

@@ -452,16 +452,16 @@ Cash Balance = Σ(CashTransaction.amount) where:
 
 **Bunches Per Tree:**
 ```
-Current Cycle Bunches Per Tree = Total Bunches Harvested (Current Cycle) / Total Palms
-All-Time Bunches Per Tree = Total Bunches Harvested (All Cycles) / Total Palms
+All-Time Bunches Per Tree = Total Bunches Harvested (Current Cycle) / Total Palms
+Current Bunches Per Tree = Bunches from Last Harvest / Total Palms
 
 Percentage Change = ((Current - All-Time) / All-Time) × 100
 ```
 
 **Oil Per Bunch:**
 ```
-Current Cycle Oil Per Bunch = (Total Oil Produced (Current Cycle) × 20) / Total Bunches Milled (Current Cycle)
-All-Time Oil Per Bunch = (Total Oil Produced (All Cycles) × 20) / Total Bunches Milled (All Cycles)
+All-Time Oil Per Bunch = (Total Oil Produced (Current Cycle) × 20) / Total Bunches Milled (Current Cycle)
+Current Oil Per Bunch = (Oil from Last Milling × 20) / Bunches from Last Milling
 
 Percentage Change = ((Current - All-Time) / All-Time) × 100
 ```
