@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.palmfarm.manager.R
 import com.palmfarm.manager.data.database.entities.Milling
 import com.palmfarm.manager.databinding.ItemMillingBinding
 import com.palmfarm.manager.utils.DateUtils
@@ -24,8 +25,9 @@ class MillingAdapter(
      * Update worker name mapping
      */
     fun updateWorkerMap(newWorkerMap: Map<Int, String>) {
+        if (workerMap == newWorkerMap) return
         workerMap = newWorkerMap
-        notifyDataSetChanged()
+        notifyItemRangeChanged(0, itemCount)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -48,15 +50,25 @@ class MillingAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(milling: Milling, workerMap: Map<Int, String>) {
+            val context = binding.root.context
             binding.tvMillingDate.text = DateUtils.formatToDisplay(milling.date)
 
-            // Display worker name from map, fallback to ID if not found
-            val workerName = workerMap[milling.millerId] ?: "Worker #${milling.millerId}"
-            binding.tvMillingWorker.text = "Worker: $workerName"
+            val workerName = workerMap[milling.millerId]
+                ?: context.getString(R.string.worker_fallback_format, milling.millerId)
+            binding.tvMillingWorker.text = context.getString(R.string.worker_name_format, workerName)
 
-            binding.tvMillingOil.text = String.format("%.1f gal", milling.oilProducedGallons)
-            binding.tvMillingBunches.text = "${milling.bunchesMilled} bunches"
-            binding.tvMillingDrums.text = "${milling.drumsCooked} drums"
+            binding.tvMillingOil.text = context.getString(
+                R.string.milling_oil_gallons_format,
+                milling.oilProducedGallons
+            )
+            binding.tvMillingBunches.text = context.getString(
+                R.string.milling_bunches_count_format,
+                milling.bunchesMilled
+            )
+            binding.tvMillingDrums.text = context.getString(
+                R.string.milling_drums_count_format,
+                milling.drumsCooked
+            )
 
             binding.root.setOnClickListener { onMillingClick(milling) }
             binding.btnMillingMenu.setOnClickListener { onMillingMenuClick(milling, it) }

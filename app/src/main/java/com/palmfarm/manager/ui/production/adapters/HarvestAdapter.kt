@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.palmfarm.manager.R
 import com.palmfarm.manager.data.database.entities.Harvest
 import com.palmfarm.manager.databinding.ItemHarvestBinding
 import com.palmfarm.manager.utils.DateUtils
@@ -24,8 +25,9 @@ class HarvestAdapter(
      * Update worker name mapping
      */
     fun updateWorkerMap(newWorkerMap: Map<Int, String>) {
+        if (workerMap == newWorkerMap) return
         workerMap = newWorkerMap
-        notifyDataSetChanged()
+        notifyItemRangeChanged(0, itemCount)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -48,11 +50,15 @@ class HarvestAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(harvest: Harvest, workerMap: Map<Int, String>) {
-            binding.tvHarvestNumber.text = "Harvest #${harvest.harvestNumber}"
+            val context = binding.root.context
+            binding.tvHarvestNumber.text = context.getString(
+                R.string.harvest_number_format,
+                harvest.harvestNumber
+            )
 
-            // Display worker name from map, fallback to ID if not found
-            val workerName = workerMap[harvest.harvesterId] ?: "Worker #${harvest.harvesterId}"
-            binding.tvHarvestWorker.text = "Worker: $workerName"
+            val workerName = workerMap[harvest.harvesterId]
+                ?: context.getString(R.string.worker_fallback_format, harvest.harvesterId)
+            binding.tvHarvestWorker.text = context.getString(R.string.worker_name_format, workerName)
 
             binding.tvHarvestDate.text = DateUtils.formatToDisplay(harvest.date)
             binding.tvHarvestBunches.text = harvest.numberOfBunches.toString()

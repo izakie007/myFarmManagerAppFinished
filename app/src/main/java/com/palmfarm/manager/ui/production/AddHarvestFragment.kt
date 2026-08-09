@@ -69,7 +69,7 @@ class AddHarvestFragment : BaseFragment<FragmentAddHarvestBinding>() {
     private fun loadNextHarvestNumber() {
         viewLifecycleOwner.lifecycleScope.launch {
             harvestNumber = viewModel.getNextHarvestNumber()
-            binding.tvHarvestNumber.text = "Harvest #$harvestNumber"
+            binding.tvHarvestNumber.text = getString(R.string.harvest_number_format, harvestNumber)
         }
     }
 
@@ -87,7 +87,7 @@ class AddHarvestFragment : BaseFragment<FragmentAddHarvestBinding>() {
             harvestDateMillis = harvest.date
             workerIdToSelect = harvest.harvesterId
 
-            binding.tvHarvestNumber.text = "Harvest #$harvestNumber"
+            binding.tvHarvestNumber.text = getString(R.string.harvest_number_format, harvestNumber)
             binding.etHarvestDate.setText(DateUtils.formatToDisplay(harvestDateMillis))
             binding.etNumberOfBunches.setText(harvest.numberOfBunches.toString())
             binding.etRemarks.setText(harvest.remarks.orEmpty())

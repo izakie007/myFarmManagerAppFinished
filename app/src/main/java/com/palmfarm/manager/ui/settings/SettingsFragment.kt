@@ -262,7 +262,7 @@ class SettingsFragment : BaseFragment<FragmentSettingsBinding>() {
      * Setup about section
      */
     private fun setupAboutSection() {
-        binding.tvAppVersion.text = "Version 2.1"
+        binding.tvAppVersion.text = "Version 2.2"
         binding.tvAppInfo.text = "Palm Farm Manager \nA comprehensive palm farm management app \nBuilt by Eng Isaac Epie"
     }
 

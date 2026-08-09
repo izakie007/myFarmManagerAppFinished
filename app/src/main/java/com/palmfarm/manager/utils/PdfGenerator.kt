@@ -706,7 +706,7 @@ class PdfGenerator(private val context: Context) {
 
             drawSignedText(
                 canvas,
-                "Profit Margin: ${String.format("%.1f%%", profitabilityData.netMarginPercent)}",
+                "Profit Margin: ${String.format(Locale.getDefault(), "%.1f%%", profitabilityData.netMarginPercent)}",
                 profitabilityData.netMarginPercent,
                 MARGIN.toFloat(),
                 yPosition,
@@ -949,7 +949,7 @@ class PdfGenerator(private val context: Context) {
         // Profit Margin
         val profitMargin = data["profit_margin"] as? Double ?: 0.0
         canvas.drawText(
-            "Profit Margin: ${String.format("%.1f%%", profitMargin)}",
+            "Profit Margin: ${String.format(Locale.getDefault(), "%.1f%%", profitMargin)}",
             MARGIN.toFloat(),
             yPosition,
             normalPaint

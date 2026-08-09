@@ -226,10 +226,10 @@ class ProductionFragment : BaseFragment<FragmentProductionBinding>() {
             viewModel.productionMetrics.collect { metrics ->
                 binding.tvBunchesMilled.text = metrics.bunchesMilled.toString()
                 binding.tvBunchesAvailable.text = metrics.bunchesAvailable.toString()
-                binding.tvOilPerBunch.text = String.format("%.2f", metrics.oilPerBunch)
-                binding.tvOilPerDrum.text = String.format("%.2f", metrics.oilPerDrum)
-                binding.tvBunchesPerDrum.text = String.format("%.2f", metrics.bunchesPerDrum)
-                binding.tvOilStock.text = String.format("%.1f gal", metrics.oilStock)
+                binding.tvOilPerBunch.text = getString(R.string.decimal_two_places_format, metrics.oilPerBunch)
+                binding.tvOilPerDrum.text = getString(R.string.decimal_two_places_format, metrics.oilPerDrum)
+                binding.tvBunchesPerDrum.text = getString(R.string.decimal_two_places_format, metrics.bunchesPerDrum)
+                binding.tvOilStock.text = getString(R.string.oil_stock_gallons_format, metrics.oilStock)
             }
         }
     }

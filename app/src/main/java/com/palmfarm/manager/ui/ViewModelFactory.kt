@@ -29,7 +29,6 @@ class ViewModelFactory(private val app: PalmFarmApp) : ViewModelProvider.Factory
     val productionCycleRepository by lazy {
         ProductionCycleRepository(
             productionCycleDao = app.database.productionCycleDao(),
-            harvestDao = app.database.harvestDao(),
             expenseDao = app.database.expenseDao(),
             saleDao = app.database.saleDao(),
             wagePaymentDao = app.database.wagePaymentDao(),
@@ -179,7 +178,6 @@ class ViewModelFactory(private val app: PalmFarmApp) : ViewModelProvider.Factory
             modelClass.isAssignableFrom(AnalyticsViewModel::class.java) -> {
                 AnalyticsViewModel(
                     cycleRepository = productionCycleRepository,
-                    productionRepository = productionRepository,
                     harvestDao = app.database.harvestDao(),
                     millingDao = app.database.millingDao(),
                     farmDao = app.database.farmDao(),

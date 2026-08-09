@@ -142,11 +142,20 @@
     <string name="add_harvest">Add Harvest</string>
     <string name="edit_harvest">Edit Harvest</string>
     <string name="harvest_number">Harvest #</string>
+    <string name="harvest_number_format">Harvest #%1$d</string>
     <string name="harvest_date">Date</string>
     <string name="harvest_worker">Worker</string>
     <string name="harvest_bunches">Number of Bunches</string>
     <string name="harvest_remarks">Remarks (Optional)</string>
     <string name="no_harvests">No harvests recorded</string>
+    <string name="worker_name_format">Worker: %1$s</string>
+    <string name="worker_fallback_format">Worker #%1$d</string>
+    <string name="milling_oil_gallons_format">%1$.1f gal</string>
+    <string name="milling_bunches_count_format">%1$d bunches</string>
+    <string name="milling_drums_count_format">%1$.1f drums</string>
+    <string name="loose_nuts_bags_format">%1$s bags</string>
+    <string name="oil_stock_gallons_format">%1$.1f gal</string>
+    <string name="decimal_two_places_format">%1$.2f</string>
     
     <!-- Milling -->
     <string name="add_milling">Add Milling</string>

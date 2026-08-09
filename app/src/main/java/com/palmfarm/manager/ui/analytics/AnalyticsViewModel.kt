@@ -2,17 +2,16 @@ package com.palmfarm.manager.ui.analytics
 
 import com.palmfarm.manager.data.database.dao.*
 import com.palmfarm.manager.data.repository.ProductionCycleRepository
-import com.palmfarm.manager.data.repository.ProductionRepository
 import com.palmfarm.manager.ui.common.BaseViewModel
 import kotlinx.coroutines.flow.*
 import java.util.Calendar
+import java.util.Locale
 
 /**
  * ViewModel for Analytics screen with KPIs and charts
  */
 class AnalyticsViewModel(
     private val cycleRepository: ProductionCycleRepository,
-    private val productionRepository: ProductionRepository,
     private val harvestDao: HarvestDao,
     private val millingDao: MillingDao,
     private val farmDao: FarmDao,
@@ -164,155 +163,6 @@ class AnalyticsViewModel(
     }
 
     /**
-     * Get income vs expenses chart data
-     */
-    fun getIncomeExpensesChartData(period: ChartPeriod): Flow<List<ChartDataPoint>> = combine(
-        saleDao.getAllSales(),
-        consumptionDao.getAllConsumption(),
-        expenseDao.getAllExpenses(),
-        wagePaymentDao.getAllWagePayments(),
-        advancePaymentDao.getAllAdvancePayments()
-    ) { sales, consumption, expenses, wages, advances ->
-
-        val dateRange = getDateRangeForPeriod(period)
-
-        // Filter by period
-        val filteredSales = sales.filter { it.date in dateRange }
-        val filteredConsumption = consumption.filter { it.date in dateRange }
-        val filteredExpenses = expenses.filter { it.date in dateRange }
-        val filteredWages = wages.filter { it.paymentDate in dateRange }
-        val filteredAdvances = advances.filter { it.date in dateRange }
-
-        // Group by month
-        val monthlyData = mutableMapOf<String, Pair<Double, Double>>()
-
-        filteredSales.forEach { sale ->
-            val monthKey = getMonthKey(sale.date)
-            val (income, expenses) = monthlyData.getOrDefault(monthKey, Pair(0.0, 0.0))
-            monthlyData[monthKey] = Pair(income + sale.totalAmount, expenses)
-        }
-
-        filteredConsumption.forEach { cons ->
-            val monthKey = getMonthKey(cons.date)
-            val (income, expenses) = monthlyData.getOrDefault(monthKey, Pair(0.0, 0.0))
-            monthlyData[monthKey] = Pair(income + (cons.quantityGallons * cons.valuedAtPrice), expenses)
-        }
-
-        filteredExpenses.forEach { expense ->
-            val monthKey = getMonthKey(expense.date)
-            val (income, expenses) = monthlyData.getOrDefault(monthKey, Pair(0.0, 0.0))
-            monthlyData[monthKey] = Pair(income, expenses + expense.amount)
-        }
-
-        filteredWages.forEach { wage ->
-            val monthKey = getMonthKey(wage.paymentDate)
-            val (income, expenses) = monthlyData.getOrDefault(monthKey, Pair(0.0, 0.0))
-            monthlyData[monthKey] = Pair(income, expenses + wage.netPayment)
-        }
-
-        filteredAdvances.forEach { advance ->
-            val monthKey = getMonthKey(advance.date)
-            val (income, expenses) = monthlyData.getOrDefault(monthKey, Pair(0.0, 0.0))
-            monthlyData[monthKey] = Pair(income, expenses + advance.amount)
-        }
-
-        // Convert to chart data points
-        monthlyData.map { (month, data) ->
-            ChartDataPoint(
-                label = month,
-                income = data.first,
-                expenses = data.second,
-                net = data.first - data.second
-            )
-        }.sortedBy { it.label }
-    }
-
-    /**
-     * Get production trends chart data
-     */
-    fun getProductionTrendsChartData(period: ChartPeriod): Flow<List<ProductionDataPoint>> = combine(
-        harvestDao.getAllHarvests(),
-        millingDao.getAllMillings()
-    ) { harvests, millings ->
-
-        val dateRange = getDateRangeForPeriod(period)
-
-        // Filter by period
-        val filteredHarvests = harvests.filter { it.date in dateRange }
-        val filteredMillings = millings.filter { it.date in dateRange }
-
-        // Group by month
-        val monthlyData = mutableMapOf<String, Triple<Int, Int, Double>>()
-
-        filteredHarvests.forEach { harvest ->
-            val monthKey = getMonthKey(harvest.date)
-            val (bunches, bunchesMilled, oil) = monthlyData.getOrDefault(
-                monthKey,
-                Triple(0, 0, 0.0)
-            )
-            monthlyData[monthKey] = Triple(bunches + harvest.numberOfBunches, bunchesMilled, oil)
-        }
-
-        filteredMillings.forEach { milling ->
-            val monthKey = getMonthKey(milling.date)
-            val (bunches, bunchesMilled, oil) = monthlyData.getOrDefault(
-                monthKey,
-                Triple(0, 0, 0.0)
-            )
-            monthlyData[monthKey] = Triple(
-                bunches,
-                bunchesMilled + milling.bunchesMilled,
-                oil + milling.oilProducedGallons
-            )
-        }
-
-        // Convert to chart data points
-        monthlyData.map { (month, data) ->
-            ProductionDataPoint(
-                label = month,
-                bunchesHarvested = data.first,
-                bunchesMilled = data.second,
-                oilProduced = data.third
-            )
-        }.sortedBy { it.label }
-    }
-
-    /**
-     * Get expense breakdown chart data
-     */
-    fun getExpenseBreakdownChartData(period: ChartPeriod): Flow<List<ExpenseBreakdown>> = combine(
-        expenseDao.getAllExpenses(),
-        wagePaymentDao.getAllWagePayments(),
-        advancePaymentDao.getAllAdvancePayments()
-    ) { expenses, wages, advances ->
-
-        val dateRange = getDateRangeForPeriod(period)
-
-        // Filter by period
-        val filteredExpenses = expenses.filter { it.date in dateRange }
-        val filteredWages = wages.filter { it.paymentDate in dateRange }
-        val filteredAdvances = advances.filter { it.date in dateRange }
-
-        // Group by category
-        val categoryTotals = filteredExpenses.groupBy { it.category }
-            .mapValues { (_, expenseList) -> expenseList.sumOf { it.amount } }
-
-        val breakdown = mutableListOf<ExpenseBreakdown>()
-
-        categoryTotals.forEach { (category, amount) ->
-            breakdown.add(ExpenseBreakdown(category, amount))
-        }
-
-        // Add wages
-        val wagesTotal = filteredWages.sumOf { it.netPayment } + filteredAdvances.sumOf { it.amount }
-        if (wagesTotal > 0) {
-            breakdown.add(ExpenseBreakdown("Wages", wagesTotal))
-        }
-
-        breakdown
-    }
-
-    /**
      * Calculate percentage change
      */
     private fun calculatePercentageChange(baseline: Double, current: Double): Double {
@@ -326,40 +176,13 @@ class AnalyticsViewModel(
     }
 
     /**
-     * Get date range for chart period
-     */
-    private fun getDateRangeForPeriod(period: ChartPeriod): LongRange {
-        val calendar = Calendar.getInstance()
-        val endDate = calendar.timeInMillis
-
-        return when (period) {
-            ChartPeriod.LAST_6_MONTHS -> {
-                calendar.add(Calendar.MONTH, -6)
-                calendar.timeInMillis..endDate
-            }
-            ChartPeriod.LAST_12_MONTHS -> {
-                calendar.add(Calendar.MONTH, -12)
-                calendar.timeInMillis..endDate
-            }
-            ChartPeriod.THIS_YEAR -> {
-                calendar.set(Calendar.MONTH, Calendar.JANUARY)
-                calendar.set(Calendar.DAY_OF_MONTH, 1)
-                calendar.timeInMillis..endDate
-            }
-            ChartPeriod.ALL_TIME -> {
-                0L..endDate
-            }
-        }
-    }
-
-    /**
      * Get month key from timestamp
      */
     private fun getMonthKey(timestamp: Long): String {
         val calendar = Calendar.getInstance().apply { timeInMillis = timestamp }
         val year = calendar.get(Calendar.YEAR)
         val month = calendar.get(Calendar.MONTH) + 1
-        return String.format("%d-%02d", year, month)
+        return String.format(Locale.US, "%d-%02d", year, month)
     }
 
     /**
@@ -809,44 +632,6 @@ data class FinancialKPIs(
     val incomePerBunch: Double,
     val profitPerBunch: Double
 )
-
-/**
- * Chart data point for income/expenses
- */
-data class ChartDataPoint(
-    val label: String,
-    val income: Double,
-    val expenses: Double,
-    val net: Double
-)
-
-/**
- * Production data point for trends
- */
-data class ProductionDataPoint(
-    val label: String,
-    val bunchesHarvested: Int,
-    val bunchesMilled: Int,
-    val oilProduced: Double
-)
-
-/**
- * Expense breakdown by category
- */
-data class ExpenseBreakdown(
-    val category: String,
-    val amount: Double
-)
-
-/**
- * Chart period options
- */
-enum class ChartPeriod {
-    LAST_6_MONTHS,
-    LAST_12_MONTHS,
-    THIS_YEAR,
-    ALL_TIME
-}
 
 /**
  * Chart data container for all charts

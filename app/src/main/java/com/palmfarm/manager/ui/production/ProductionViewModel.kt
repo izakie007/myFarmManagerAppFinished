@@ -9,12 +9,14 @@ import com.palmfarm.manager.data.repository.ProductionCycleRepository
 import com.palmfarm.manager.data.repository.ProductionRepository
 import com.palmfarm.manager.data.repository.WorkerRepository
 import com.palmfarm.manager.ui.common.BaseViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 /**
  * ViewModel for Production screen
  */
+@OptIn(ExperimentalCoroutinesApi::class)
 class ProductionViewModel(
     private val productionRepository: ProductionRepository,
     private val cycleRepository: ProductionCycleRepository,
@@ -374,13 +376,6 @@ class ProductionViewModel(
         }
 
         return null
-    }
-
-    /**
-     * Refresh production data
-     */
-    fun refresh() {
-        // Streams are already hot and update automatically.
     }
 
     /**
